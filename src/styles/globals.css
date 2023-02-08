@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,8 +8,10 @@
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
-  --primary-color: "#f7f5f8";
-  --white: "#ffffff";
+  --primary-color: #f7f5f8;
+  --white: #ffffff;
+
+  --font: "Poppins", sans-serif;
 }
 
 * {
@@ -19,12 +23,11 @@
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: var(--primary-color);
+  background-color: var(--primary-color);
+  font-family: var(--font);
 }
 
 a {
