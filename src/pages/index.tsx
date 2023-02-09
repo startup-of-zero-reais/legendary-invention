@@ -1,5 +1,6 @@
 import Head from "next/head";
-import Navbar from "@/components/Navbar";
+import { Navbar, SelectMenu, Checkbox } from "@/components";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
   return (
@@ -11,6 +12,72 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
+      <main className="mx-12 my-8 ">
+        <div className="flex flex-col w-64 bg-white px-6 pt-5 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:rounded-lg">
+          <div className="flex flex-1 justify-between items-center">
+            <h6 className="font-semibold">Filtro</h6>
+            <div className="flex flex-row justify-center items-center">
+              <p className="font-light text-xs text-gray-400 mr-1">
+                Limpar tudo
+              </p>
+              <XCircleIcon
+                color="gray"
+                className="block h-6 w-6 hover:cursor-pointer"
+                aria-hidden="true"
+                onClick={() => console.log("calling clear all")}
+              />
+            </div>
+          </div>
+          <div className="mt-6">
+            <h6 className="mb-3">Localização</h6>
+            <SelectMenu
+              cities={cities}
+              onChangeSelect={(item) => console.log("calling item", item)}
+            />
+          </div>
+
+          <div className="flex flex-col mt-6">
+            <h6 className="mb-3">Disponibilidade</h6>
+            <Checkbox value={"Freelance"} />
+            <Checkbox value={"Full Time"} />
+            <Checkbox value={"PJ"} />
+            <Checkbox value={"CLT"} />
+          </div>
+
+          <div className="flex flex-col mt-6">
+            <h6 className="mb-3">Especialidades</h6>
+            <Checkbox value={"Frontend"} />
+            <Checkbox value={"Backend"} />
+            <Checkbox value={"Mobile"} />
+            <Checkbox value={"Full stack"} />
+            <Checkbox value={"UI Designer"} />
+            <Checkbox value={"UX Designer"} />
+          </div>
+        </div>
+      </main>
     </>
   );
 }
+
+const cities = [
+  {
+    id: "any_id_1",
+    name: "Goiânia",
+  },
+  {
+    id: "any_id_2",
+    name: "São Paulo",
+  },
+  {
+    id: "any_id_3",
+    name: "Rio de Janeiro",
+  },
+  {
+    id: "any_id_4",
+    name: "Florianópolis",
+  },
+  {
+    id: "any_id_5",
+    name: "Chapecó",
+  },
+];
