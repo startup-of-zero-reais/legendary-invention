@@ -1,35 +1,47 @@
-import React, { useCallback, useState } from "react";
+import {
+  chakra,
+  Flex,
+  useCheckbox,
+  Text,
+  Box,
+  UseCheckboxProps,
+} from "@chakra-ui/react";
 
-type Props = {
-  value: string;
-  changeChecked?: (isChecked: boolean) => void;
-};
-
-const Checkbox: React.FC<Props> = ({ value, changeChecked }: Props) => {
-  const [checked, setChecked] = useState(false);
-
-  const handleChange = useCallback(() => {
-    changeChecked?.(!checked);
-    setChecked(!checked);
-  }, [changeChecked, checked]);
+export default function CustomCheckbox(props: UseCheckboxProps) {
+  const { state, getLabelProps, htmlProps, getInputProps, getCheckboxProps } =
+    useCheckbox(props);
 
   return (
-    <div className="flex items-center my-2">
-      <input
-        id={`${value}-checkbox`}
-        type="checkbox"
-        checked={checked}
-        className="default:ring-2 checked:bg-blue-500"
-        onChange={handleChange}
-      />
-      <label
-        className="ml-2 text-gray-500 font-light text-sm"
-        htmlFor={`${value}-checkbox`}
+    <chakra.label
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      gridColumnGap={2}
+      maxW="40"
+      rounded="lg"
+      cursor="pointer"
+      {...htmlProps}
+    >
+      <input {...getInputProps()} hidden />
+      <Flex
+        alignItems="center"
+        justifyContent="center"
+        border="1px solid"
+        borderColor="blackAlpha.500"
+        w={4}
+        h={4}
+        {...getCheckboxProps()}
       >
-        {value}
-      </label>
-    </div>
+        {state.isChecked && <Box w={2} h={2} bg="blue.500" />}
+      </Flex>
+      <Text
+        color={"gray.500"}
+        fontSize="14px"
+        fontWeight="semibold"
+        {...getLabelProps()}
+      >
+        {props.value}
+      </Text>
+    </chakra.label>
   );
-};
-
-export default Checkbox;
+}
