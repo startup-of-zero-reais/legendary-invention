@@ -17,7 +17,7 @@ const Location: React.FC<Props> = ({ locations }: Props) => {
   return (
     <Stack mt="24px">
       <Text fontWeight="bold" fontSize="14">
-        Location
+        Localização
       </Text>
       <Select
         onChange={(e) => updateLocation(e.target.value)}
