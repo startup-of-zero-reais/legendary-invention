@@ -1,12 +1,5 @@
-import {
-  Badge,
-  Box,
-  chakra,
-  Flex,
-  HStack,
-  Text,
-  useRangeSlider,
-} from "@chakra-ui/react";
+import { useDebounce } from "@/utils/debounce";
+import { Box, chakra, Flex, Text, useRangeSlider } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 
 type Props = {
@@ -18,6 +11,7 @@ type Props = {
   defaultValue: [number, number];
   "aria-label": [string, string];
   minMaxValue: ([min, max]: [number, number]) => void;
+  reset?: boolean;
 };
 
 const RangeSlider: React.FC<Props> = ({
@@ -28,8 +22,11 @@ const RangeSlider: React.FC<Props> = ({
   stepToIndex,
   stepToNumber,
   minMaxValue,
+  reset,
   ...rest
 }: Props) => {
+  const debounce = useDebounce(minMaxValue);
+
   const {
     state,
     actions,
@@ -60,9 +57,15 @@ const RangeSlider: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    minMaxValue([state.value[0], state.value[1]]);
+    debounce([state.value[0], state.value[1]]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.value]);
+  }, [state.value[0], state.value[1]]);
+
+  useEffect(() => {
+    if (reset) {
+      actions.reset();
+    }
+  }, [actions, reset]);
 
   return (
     <>
