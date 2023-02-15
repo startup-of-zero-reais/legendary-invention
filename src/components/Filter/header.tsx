@@ -9,7 +9,7 @@ const Header: React.FC = () => {
 
   return (
     <Flex alignItems="center" justifyContent="space-between">
-      <Text fontWeight="bold">Filtro</Text>
+      <Text fontWeight="semibold">Filtro</Text>
 
       <Flex justifyContent="center" alignItems="center">
         <Button size="xs" mr="2" onClick={() => updateClearAll(true)}>

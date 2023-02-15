@@ -11,7 +11,7 @@ const WorkingModel: React.FC<Props> = ({ workingModels }: Props) => {
 
   return (
     <Stack mt="24px">
-      <Text fontWeight="bold" fontSize="14" mb="4">
+      <Text fontWeight="semibold" fontSize="14" mb="4">
         Modelo de Trabalho
       </Text>
 
@@ -19,7 +19,7 @@ const WorkingModel: React.FC<Props> = ({ workingModels }: Props) => {
         <Stack>
           {workingModels.map((model, index) => (
             <Radio key={index} value={model}>
-              <Text fontSize="14" fontWeight="medium">
+              <Text fontSize="12" fontWeight="normal" color="gray.300">
                 {model}
               </Text>
             </Radio>
