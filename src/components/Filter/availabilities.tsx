@@ -11,7 +11,7 @@ const Availabilities: React.FC<Props> = ({ availabilities }: Props) => {
 
   return (
     <Stack mt="24px">
-      <Text fontWeight="bold" fontSize="14" mb="4">
+      <Text fontWeight="semibold" fontSize="14" mb="4">
         Regime de Contrato
       </Text>
 
@@ -25,7 +25,7 @@ const Availabilities: React.FC<Props> = ({ availabilities }: Props) => {
         <Stack>
           {availabilities.map((availability, key) => (
             <Checkbox key={key} value={availability}>
-              <Text fontSize="14" fontWeight="medium">
+              <Text fontWeight="normal" fontSize="12" color="gray.300">
                 {availability}
               </Text>
             </Checkbox>

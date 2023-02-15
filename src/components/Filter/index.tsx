@@ -45,14 +45,15 @@ const Filter: React.FC<Props> = ({
   return (
     <Box
       transition="200ms ease"
-      width={{ md: "full", lg: "300px" }}
+      width={{ base: "full", lg: "300px" }}
       bg="white"
-      borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      h="full"
-      px="5"
-      py="5"
-      borderRadius="2xl"
+      border="1px"
+      borderColor={useColorModeValue("gray.200", "gray.700")}
+      minHeight={{ lg: "780px", base: 0 }}
+      flexShrink={0}
+      flexGrow={0}
+      p={{ base: 4, lg: 6 }}
+      borderRadius={{ base: "md", lg: "2xl" }}
     >
       <Header />
 

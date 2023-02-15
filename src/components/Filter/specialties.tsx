@@ -11,7 +11,7 @@ const Specialties: React.FC<Props> = ({ specialties }: Props) => {
 
   return (
     <Stack mt="24px">
-      <Text fontWeight="bold" fontSize="14" mb="4">
+      <Text fontWeight="semibold" fontSize="14" mb="4">
         Especialidades
       </Text>
 
@@ -23,7 +23,7 @@ const Specialties: React.FC<Props> = ({ specialties }: Props) => {
         <Stack>
           {specialties.map((specialty, key) => (
             <Checkbox key={key} value={specialty}>
-              <Text fontSize="14" fontWeight="medium">
+              <Text fontSize="12" fontWeight="normal" color="gray.300">
                 {specialty}
               </Text>
             </Checkbox>
