@@ -12,11 +12,11 @@ type Props = {
 };
 
 const Location: React.FC<Props> = ({ locations }: Props) => {
-  const { updateLocation, state } = useFilter();
+  const { updateLocation, state, isExpanded } = useFilter();
 
   return (
-    <Stack mt="24px">
-      <Text fontWeight="bold" fontSize="14">
+    <Stack mt={{ base: isExpanded ? 4 : 0 }}>
+      <Text fontWeight="semibold" fontSize="14">
         Localização
       </Text>
       <Select
