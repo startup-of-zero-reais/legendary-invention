@@ -8,15 +8,29 @@ import {
   useBoolean,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { formatDistance } from "date-fns";
+import { pt } from "date-fns/locale";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
+import SkeletonCardVacancies from "./skeleton";
 
 type Props = {
   index: number;
+  logo?: string;
+  title: string;
+  salary: {
+    min: number;
+    max: number;
+  }
+  description: string;
+  tags: string[]
+  createdAt: Date;
+  workModel: string;
 };
 
-const CardVacancies: React.FC<Props> = ({ index = 0 }) => {
+
+const CardVacancies: React.FC<Props> = ({ index = 0, logo = "https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg", title, description, salary, tags, workModel, createdAt }) => {
   const [open, setOpen] = useBoolean();
 
   useEffect(() => {
@@ -40,6 +54,13 @@ const CardVacancies: React.FC<Props> = ({ index = 0 }) => {
     },
   };
 
+  const currencyFormat = useCallback((currency: number) =>
+    currency.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }),
+    [])
+
+  const dateFormated = useMemo(() => formatDistance(createdAt, new Date(), { addSuffix: true, locale: pt }), [createdAt])
+  const compositionSalary = useMemo(() => `${currencyFormat(salary.min)}-${currencyFormat(salary.max)}`, [salary])
+
   return (
     <Box
       bg="gray.50"
@@ -58,7 +79,7 @@ const CardVacancies: React.FC<Props> = ({ index = 0 }) => {
             animate={"visible"}
           >
             <Image
-              src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
+              src={logo}
               alt="Workflow"
               width={40}
               height={40}
@@ -69,7 +90,7 @@ const CardVacancies: React.FC<Props> = ({ index = 0 }) => {
                 direction={{ base: "column", lg: "row" }}
               >
                 <Text fontWeight="medium" _after={{ lg: { content: `" •"` } }}>
-                  Create Figma Designs for Web Application
+                  {title}
                 </Text>
                 <Text
                   marginLeft="4"
@@ -77,12 +98,12 @@ const CardVacancies: React.FC<Props> = ({ index = 0 }) => {
                   fontSize="12"
                   color="gray.300"
                 >
-                  2 Hours ago
+                  {dateFormated}
                 </Text>
               </Stack>
               <HStack mt="2">
                 <Text color="gray.300" fontSize="12" fontWeight="normal">
-                  Sálario: R$1.000,00-R$4.000,00 - Remoto
+                  {`Sálario: ${compositionSalary} - ${workModel}`}
                 </Text>
               </HStack>
             </Flex>
@@ -94,35 +115,28 @@ const CardVacancies: React.FC<Props> = ({ index = 0 }) => {
             animate={"visible"}
             mt="4"
           >
-            <Text fontWeight="medium" fontSize="12">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the standard dummy text ever since
-              the 1500s, when an unknown printer took a galley of type and
-              scrambled it to make a type specimen book. It has survived not
-              only five centuries, but also the leap into electronic
-              typesetting, remaining essentially unchanged. It was popularised
-              in the 1960s with the release of Letraset sheets containing Lorem
-              Ipsum passages, and more recently with desktop publishing software
-              like Aldus PageMaker including versions of Lorem Ipsum.
+            <Text fontWeight="normal" fontSize="12">
+              {description}
             </Text>
 
-            <HStack>
-              {["User Interface Design", "User Experience Design"].map(
+            <Flex flexDirection={{ base: "column", md: "row" }} alignItems={{ base: "start", md: "center" }} >
+              {tags.map(
                 (tag, key) => (
-                  <Badge p="1" key={key}>
-                    <Text fontWeight="normal" fontSize="12">
+                  <Badge p={{ base: 0, md: 1 }} key={key} _notFirst={{ marginLeft: { md: 3, base: 0 }, marginTop: { base: 2, md: 0 } }} >
+                    <Text fontWeight="medium" fontSize="12">
                       {tag}
                     </Text>
                   </Badge>
                 )
               )}
-            </HStack>
+            </Flex>
           </Stack>
         </>
       ) : (
-        <h1>hello</h1>
-      )}
-    </Box>
+        <SkeletonCardVacancies />
+      )
+      }
+    </Box >
   );
 };
 
