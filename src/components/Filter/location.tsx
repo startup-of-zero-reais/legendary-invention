@@ -21,7 +21,7 @@ const Location: React.FC<Props> = ({ locations }: Props) => {
       </Text>
       <Select
         onChange={(e) => updateLocation(e.target.value)}
-        placeholder="Select option"
+        placeholder="Selecione uma opção..."
         size="xs"
         value={state.location}
       >
