@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Header, Filter, CardVacancies } from "@/components";
+import { Header, Filter, CardVacancy, ModalApplyVacancy } from "@/components";
 import {
   Box,
   Container,
@@ -7,12 +7,33 @@ import {
   IconButton,
   Input,
   useColorModeValue,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { CONSTANTS } from "@/constants";
 import { Search2Icon } from "@chakra-ui/icons";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useLoadJob, useLoadAllJob } from "@/domain";
 
 export default function Home() {
+  let router = useRouter();
+  const { onOpen, isOpen, onClose } = useDisclosure();
+
+  const { data: listJob, isLoading: isLoadingListJob } = useLoadAllJob({
+    search: "Professor",
+  });
+
+  const { data: job } = useLoadJob({
+    id: router.query.vaga as string,
+  });
+
+  useEffect(() => {
+    if (!router.query.vaga) return;
+    onOpen();
+  }, [onOpen, router.query.vaga]);
+
   return (
     <>
       <Head>
@@ -59,16 +80,23 @@ export default function Home() {
               borderRadius={{ base: "md", lg: "2xl" }}
               alignItems={"stretch"}
             >
-              {[0, 1, 2, 3].map((_, key) => (
-                <CardVacancies index={key} key={key}
-                  createdAt={new Date()}
-                  description={'Lorem Ipsum é simplesmente uma simulação de texto da indústria tipográfica e de impressos, e vem sendo utilizado desde o século XVI, quando um impressor desconhecido pegou uma bandeja de tipos e os embaralhou para fazer um livro de modelos de tipos. Lorem Ipsum sobreviveu não só a cinco séculos, como também ao salto para a editoração eletrônica, permanecendo essencialmente inalterado. Se popularizou na década de 60, quando a Letraset lançou decalques contendo passagens de Lorem Ipsum, e mais recentemente quando passou a ser integrado a softwares de editoração eletrônica como Aldus PageMaker.'}
-                  salary={{ min: 1200, max: 2000 }}
-                  tags={['Frontend', 'Backend']}
-                  title={'Procurando desenvolvedor FullStack'}
-                  workModel={'Home Office'}
-                />
+              {listJob?.map((job, key) => (
+                <Link href={`/?vaga=${job.id}`} key={key}>
+                  <CardVacancy
+                    index={key}
+                    job={job}
+                    isLoading={isLoadingListJob}
+                  />
+                </Link>
               ))}
+
+              {!!job && !!router.query.vaga && (
+                <ModalApplyVacancy
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  job={job}
+                />
+              )}
             </VStack>
           </Flex>
         </Flex>
