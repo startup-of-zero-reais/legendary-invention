@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, useColorModeValue } from "@chakra-ui/react";
+import { Box, Stack, useColorModeValue } from "@chakra-ui/react";
 import { motion, Variants } from "framer-motion";
 
 // @Component Internal Applicaiton
@@ -57,7 +57,9 @@ const Filter: React.FC<Props> = ({
     >
       <Header />
 
-      <motion.div
+      <Stack
+        as={motion.div}
+        initial={"closed"}
         style={{ backgroundColor: "white" }}
         animate={isExpanded ? "open" : "closed"}
         variants={variants}
@@ -72,7 +74,7 @@ const Filter: React.FC<Props> = ({
         <WorkingModel workingModels={workingModels} />
 
         <Salary />
-      </motion.div>
+      </Stack>
     </Box>
   );
 };

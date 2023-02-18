@@ -25,6 +25,7 @@ const Header: React.FC = () => {
           as={motion.button}
           variants={{ expand: { rotate: 0 }, close: { rotate: 180 } }}
           animate={isExpanded ? "expand" : "close"}
+          initial={"close"}
           onClick={() => updateExpanded(!isExpanded)}
           size="sm"
         />

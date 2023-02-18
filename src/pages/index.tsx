@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Header, Filter, CardVacancies } from "@/components";
+import { Header, Filter, CardVacancy, ModalApplyVacancy } from "@/components";
 import {
   Box,
   Container,
@@ -7,12 +7,33 @@ import {
   IconButton,
   Input,
   useColorModeValue,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { CONSTANTS } from "@/constants";
 import { Search2Icon } from "@chakra-ui/icons";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useLoadJob, useLoadAllJob } from "@/domain";
 
 export default function Home() {
+  let router = useRouter();
+  const { onOpen, isOpen, onClose } = useDisclosure();
+
+  const { data: listJob, isLoading: isLoadingListJob } = useLoadAllJob({
+    search: "Professor",
+  });
+
+  const { data: job } = useLoadJob({
+    id: router.query.vaga as string,
+  });
+
+  useEffect(() => {
+    if (!router.query.vaga) return;
+    onOpen();
+  }, [onOpen, router.query.vaga]);
+
   return (
     <>
       <Head>
@@ -59,9 +80,22 @@ export default function Home() {
               borderRadius={{ base: "md", lg: "2xl" }}
               alignItems={"stretch"}
             >
-              {[0, 1, 2, 3].map((_, key) => (
-                <CardVacancies index={key} key={key} />
+              {listJob?.map((job, key) => (
+                <CardVacancy
+                  index={key}
+                  key={key}
+                  job={job}
+                  isLoading={isLoadingListJob}
+                />
               ))}
+
+              {!!job && !!router.query.vaga && (
+                <ModalApplyVacancy
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  job={job}
+                />
+              )}
             </VStack>
           </Flex>
         </Flex>
