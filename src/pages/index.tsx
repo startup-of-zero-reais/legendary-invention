@@ -81,13 +81,12 @@ export default function Home() {
               alignItems={"stretch"}
             >
               {listJob?.map((job, key) => (
-                <Link href={`/?vaga=${job.id}`} key={key}>
-                  <CardVacancy
-                    index={key}
-                    job={job}
-                    isLoading={isLoadingListJob}
-                  />
-                </Link>
+                <CardVacancy
+                  index={key}
+                  key={key}
+                  job={job}
+                  isLoading={isLoadingListJob}
+                />
               ))}
 
               {!!job && !!router.query.vaga && (

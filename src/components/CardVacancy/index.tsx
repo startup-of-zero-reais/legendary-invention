@@ -45,6 +45,7 @@ const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
   ) : (
     <Flex
       as={Link}
+      scroll={false}
       href={`/?vaga=${id}`}
       flexDir={"column"}
       bg="gray.50"

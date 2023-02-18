@@ -61,7 +61,7 @@ export function ApplyProvider({
   );
 
   const close = useCallback(() => {
-    router.push("/");
+    router.push("/", undefined, { scroll: false });
     onClose();
   }, [onClose, router]);
 
