@@ -1,3 +1,4 @@
+import { CONSTANTS } from "@/constants";
 import { Action, State, Type } from "./types";
 
 export const initialState: State = {
@@ -6,9 +7,10 @@ export const initialState: State = {
   location: "",
   workingModel: "",
   salary: {
-    max: 0,
-    min: 0,
+    max: CONSTANTS.initial_price.max,
+    min: CONSTANTS.initial_price.min,
   },
+  search: "",
 };
 
 export function reducer(state: State, action: Action) {
@@ -23,6 +25,8 @@ export function reducer(state: State, action: Action) {
       return { ...state, workingModel: action.payload };
     case Type.UPDATE_SALARY:
       return { ...state, salary: action.payload };
+    case Type.UPDATE_SEARCH:
+      return { ...state, search: action.payload };
     case Type.RESET_STATE:
       return initialState;
     default:

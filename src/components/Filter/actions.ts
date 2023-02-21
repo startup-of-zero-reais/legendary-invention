@@ -5,6 +5,7 @@ import {
   UpdateAvailabilitiesAction,
   UpdateLocationAction,
   UpdateSalaryAction,
+  UpdateSearchAction,
   UpdateSpecialtiesAction,
   UpdateWorkingModelAction,
 } from "./types";
@@ -54,5 +55,12 @@ export function resetState(): ResetStateAction {
   return {
     type: Type.RESET_STATE,
     payload: null,
+  };
+}
+
+export function updateSearchAction(payload: string): UpdateSearchAction {
+  return {
+    type: Type.UPDATE_SEARCH,
+    payload,
   };
 }
