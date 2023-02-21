@@ -17,7 +17,10 @@ const Salary: React.FC = () => {
         minMaxValue={([min, max]) => updateSalary({ max, min })}
         min={CONSTANTS.price_filter[0]}
         max={CONSTANTS.price_filter[1]}
-        defaultValue={[10000, 40000]}
+        defaultValue={[
+          CONSTANTS.initial_price.min,
+          CONSTANTS.initial_price.max,
+        ]}
         stepByNumber={0}
         stepToIndex={0}
         stepToNumber={0}
