@@ -2,13 +2,11 @@ import { JobModel } from "@/domain";
 import { useColorModeValue, VStack } from "@chakra-ui/react";
 import React from "react";
 import CardVacancy from "../CardVacancy";
+import { useFilter } from "../Filter/context";
 
-type Props = {
-  isLoading: boolean;
-  jobs?: JobModel[];
-};
+const WrapListVacancies: React.FC = () => {
+  const { jobs, isLoading } = useFilter();
 
-const WrapListVacancies: React.FC<Props> = ({ isLoading, jobs }) => {
   return (
     <VStack
       p={{ base: "2", md: "4", lg: "6" }}
