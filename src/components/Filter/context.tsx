@@ -1,3 +1,4 @@
+import { LoadAllJob, useLoadAllJob } from "@/domain";
 import { useMediaQuery } from "@chakra-ui/react";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import {
@@ -5,6 +6,7 @@ import {
   updateAvailabilitiesAction,
   updateLocationAction,
   updateSalaryAction,
+  updateSearchAction,
   updateSpecialtiesAction,
   updateWorkingModelAction,
 } from "./actions";
@@ -23,6 +25,9 @@ interface FilterProviderProps {
   updateSalary: (salary: Salary) => void;
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
+  updateSearch: (search: string) => void;
+  jobs: LoadAllJob.Model;
+  isLoading: boolean;
   isExpanded: boolean;
   isClearAll: boolean;
   state: State;
@@ -32,10 +37,24 @@ const FilterContext = React.createContext<FilterProviderProps>(
   {} as FilterProviderProps
 );
 
+const parseState = (state: State) => {
+  const { salary, ...rest } = state;
+
+  return {
+    search: rest.search,
+    minSalary: salary.min,
+    maxSalary: salary.max,
+    contracts: rest.availabilities.join(","),
+    availability: rest.workingModel,
+  };
+};
+
 export function FilterProvider({ children }: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  const { data, isLoading } = useLoadAllJob(parseState(state));
 
   const [isLargerThan992] = useMediaQuery("(min-width: 992px)", {
     ssr: true,
@@ -58,6 +77,8 @@ export function FilterProvider({ children }: WithChildrenProps) {
 
   const updateWorkingModel = (workingModel: string) =>
     dispatch(updateWorkingModelAction(workingModel));
+
+  const updateSearch = (search: string) => dispatch(updateSearchAction(search));
 
   const updateSalary = (salary: Salary) => dispatch(updateSalaryAction(salary));
 
@@ -89,11 +110,14 @@ export function FilterProvider({ children }: WithChildrenProps) {
         updateSpecialties,
         updateWorkingModel,
         updateSalary,
+        updateSearch,
         updateClearAll,
         updateExpanded,
         isExpanded: expanded,
         isClearAll: clearAll,
         state,
+        jobs: (data as LoadAllJob.Model) || [],
+        isLoading,
       }}
     >
       {children}

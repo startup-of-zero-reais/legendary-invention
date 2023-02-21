@@ -45,7 +45,7 @@ const Header: React.FC<Props> = ({
         loader={({ src }) => src}
         style={{ objectFit: "cover" }}
       />
-      <Flex flexDirection="column" ml={{ base: "4" }}>
+      <Flex flexShrink={0} flexDirection="column" ml={{ base: "4" }}>
         <Stack
           alignItems={{ lg: "center" }}
           direction={{ base: "column", lg: "row" }}
