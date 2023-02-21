@@ -10,4 +10,11 @@ export const CONSTANTS = {
   get price_filter() {
     return [2000, 50000];
   },
+
+  get initial_price() {
+    return {
+      min: 3000,
+      max: 40000,
+    };
+  },
 };
