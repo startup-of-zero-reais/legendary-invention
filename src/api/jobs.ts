@@ -6,7 +6,7 @@ export const getJobs = async (
 ): Promise<LoadAllJob.Model> => {
   return (
     await request.get<{ data: LoadAllJob.Model }>(`/jobs`, {
-      params: params && clearParamValueEmpty(params),
+      params: clearParamValueEmpty(params),
     })
   ).data.data;
 };
@@ -14,11 +14,12 @@ export const getJobs = async (
 export const getJob = async (jobId: String): Promise<LoadJob.Model> =>
   (await request.get(`/jobs/${jobId}`)).data;
 
-const clearParamValueEmpty = (params: LoadAllJob.Params) => {
-  for (const [key, value] of Object.entries(params)) {
-    if (!value) {
-      delete params[key as keyof LoadAllJob.Params];
-    }
+const clearParamValueEmpty = (params?: LoadAllJob.Params) => {
+  const urlParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params || {})) {
+    if (typeof value !== "undefined") urlParams.set(key, value as string);
   }
+
   return params;
 };
