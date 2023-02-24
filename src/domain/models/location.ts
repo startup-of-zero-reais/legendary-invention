@@ -2,7 +2,7 @@ type Links = 'jobs'
 
 export type Location = {
     name: string;
-    _links: Array<Record<Links, string>>
+    _links: Record<Links, string>
 }
 
 export type EmbeddedLocations = {
