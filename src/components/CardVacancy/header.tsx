@@ -4,6 +4,7 @@ import { pt } from "date-fns/locale";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
 import React, { useMemo } from "react";
+import { imgLoader } from "@/utils/image-loader";
 
 type Props = {
   logo: string;
@@ -41,8 +42,8 @@ const Header: React.FC<Props> = ({
         src={logo}
         alt="Logo da empresa"
         width={60}
-        height={40}
-        loader={({ src }) => src}
+        height={60}
+        loader={imgLoader}
         style={{ objectFit: "cover" }}
       />
       <Flex flexShrink={0} flexDirection="column" ml={{ base: "4" }}>
