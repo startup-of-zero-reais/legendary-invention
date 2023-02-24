@@ -1,4 +1,3 @@
-import { JobModel } from "@/domain";
 import { useColorModeValue, VStack } from "@chakra-ui/react";
 import React from "react";
 import CardVacancy from "../CardVacancy";

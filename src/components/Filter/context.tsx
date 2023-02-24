@@ -3,12 +3,12 @@ import { useMediaQuery } from "@chakra-ui/react";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import {
   resetState,
-  updateAvailabilitiesAction,
+  updateContractsAction,
   updateLocationAction,
   updateSalaryAction,
   updateSearchAction,
   updateSpecialtiesAction,
-  updateWorkingModelAction,
+  updateAvailabilityAction,
 } from "./actions";
 import { initialState, reducer } from "./reducer";
 import { Salary, State } from "./types";
@@ -19,9 +19,9 @@ interface WithChildrenProps {
 
 interface FilterProviderProps {
   updateLocation: (location: string) => void;
-  updateAvailabilities: (availabilities: string[]) => void;
+  updateContracts: (contracts: string[]) => void;
   updateSpecialties: (specialties: string[]) => void;
-  updateWorkingModel: (workingModel: string) => void;
+  updateAvailability: (availability: string) => void;
   updateSalary: (salary: Salary) => void;
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
@@ -44,8 +44,9 @@ const parseState = (state: State) => {
     search: rest.search,
     minSalary: salary.min,
     maxSalary: salary.max,
-    contracts: rest.availabilities.join(","),
-    availability: rest.workingModel,
+    availability: rest.availability,
+    contracts: rest.contracts.join(","),
+    techs: rest.specialties.join(","),
   };
 };
 
@@ -53,7 +54,6 @@ export function FilterProvider({ children }: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
   const { data, isLoading } = useLoadAllJob(parseState(state));
 
   const [isLargerThan992] = useMediaQuery("(min-width: 992px)", {
@@ -69,14 +69,14 @@ export function FilterProvider({ children }: WithChildrenProps) {
   const updateLocation = (location: string) =>
     dispatch(updateLocationAction(location));
 
-  const updateAvailabilities = (availabilities: string[]) =>
-    dispatch(updateAvailabilitiesAction(availabilities));
+  const updateContracts = (contracts: string[]) =>
+    dispatch(updateContractsAction(contracts));
 
   const updateSpecialties = (specialties: string[]) =>
     dispatch(updateSpecialtiesAction(specialties));
 
-  const updateWorkingModel = (workingModel: string) =>
-    dispatch(updateWorkingModelAction(workingModel));
+  const updateAvailability = (availability: string) =>
+    dispatch(updateAvailabilityAction(availability));
 
   const updateSearch = (search: string) => dispatch(updateSearchAction(search));
 
@@ -106,9 +106,9 @@ export function FilterProvider({ children }: WithChildrenProps) {
     <FilterContext.Provider
       value={{
         updateLocation,
-        updateAvailabilities,
+        updateContracts,
         updateSpecialties,
-        updateWorkingModel,
+        updateAvailability,
         updateSalary,
         updateSearch,
         updateClearAll,
@@ -116,7 +116,7 @@ export function FilterProvider({ children }: WithChildrenProps) {
         isExpanded: expanded,
         isClearAll: clearAll,
         state,
-        jobs: (data as LoadAllJob.Model) || [],
+        jobs: data as any,
         isLoading,
       }}
     >

@@ -2,12 +2,12 @@ import {
   ResetStateAction,
   Salary,
   Type,
-  UpdateAvailabilitiesAction,
+  UpdateContractsAction,
   UpdateLocationAction,
   UpdateSalaryAction,
   UpdateSearchAction,
   UpdateSpecialtiesAction,
-  UpdateWorkingModelAction,
+  UpdateAvailabilityAction,
 } from "./types";
 
 export function updateLocationAction(payload: string): UpdateLocationAction {
@@ -17,11 +17,11 @@ export function updateLocationAction(payload: string): UpdateLocationAction {
   };
 }
 
-export function updateAvailabilitiesAction(
+export function updateContractsAction(
   payload: string[]
-): UpdateAvailabilitiesAction {
+): UpdateContractsAction {
   return {
-    type: Type.UPDATE_AVAILABILITIES,
+    type: Type.UPDATE_CONTRACTS,
     payload,
   };
 }
@@ -35,11 +35,11 @@ export function updateSpecialtiesAction(
   };
 }
 
-export function updateWorkingModelAction(
+export function updateAvailabilityAction(
   payload: string
-): UpdateWorkingModelAction {
+): UpdateAvailabilityAction {
   return {
-    type: Type.UPDATE_WORKING_MODEL,
+    type: Type.UPDATE_AVAILABILITY,
     payload,
   };
 }

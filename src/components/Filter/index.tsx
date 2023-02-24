@@ -6,10 +6,10 @@ import { motion, Variants } from "framer-motion";
 // @Component Internal Applicaiton
 import Location from "./location";
 import Specialties from "./specialties";
-import WorkingModel from "./working-model";
+import Availability from "./availability";
 import Salary from "./salary";
 import Header from "./header";
-import Availabilities from "./availabilities";
+import Contracts from "./contracts";
 
 import { FilterProvider, useFilter } from "./context";
 
@@ -23,17 +23,17 @@ type Filter = {
 };
 
 type Props = {
-  availabilities: string[];
+  contracts: string[];
   specialties: string[];
-  workingModels: string[];
+  availability: string[];
   locations: Location[];
 };
 
 const Filter: React.FC<Props> = ({
   locations,
   specialties,
-  availabilities,
-  workingModels,
+  contracts,
+  availability,
 }: Props) => {
   const { isExpanded } = useFilter();
 
@@ -67,11 +67,11 @@ const Filter: React.FC<Props> = ({
       >
         <Location locations={locations} />
 
-        <Availabilities availabilities={availabilities} />
+        <Contracts contracts={contracts} />
 
         <Specialties specialties={specialties} />
 
-        <WorkingModel workingModels={workingModels} />
+        <Availability availability={availability} />
 
         <Salary />
       </Stack>
@@ -81,22 +81,22 @@ const Filter: React.FC<Props> = ({
 
 const FilterWrap = () => {
   return (
-    <FilterProvider>
+    <Box>
       <Filter
-        workingModels={workingModels}
-        availabilities={availabilities}
+        availability={availability}
+        contracts={contracts}
         specialties={specialties}
         locations={locations}
       />
-    </FilterProvider>
+    </Box>
   );
 };
 
 // TODO - Remove get this from the API
 
-const workingModels = ["Home office", "Híbrido", "Presencial"];
+const availability = ["Home office", "Híbrido", "Presencial"];
 
-const availabilities = ["Freelance", "Full Time", "PJ", "CLT"];
+const contracts = ["CLT", "Temporário", "Estágio", "Flex", "Autonomo"];
 
 const specialties = [
   "Frontend",

@@ -1,8 +1,8 @@
 export enum Type {
   "UPDATE_LOCATION" = "UPDATE_LOCATION",
-  "UPDATE_AVAILABILITIES" = "UPDATE_AVAILABILITIES",
+  "UPDATE_CONTRACTS" = "UPDATE_CONTRACTS",
   "UPDATE_SPECIALTIES" = "UPDATE_SPECIALTIES",
-  "UPDATE_WORKING_MODEL" = "UPDATE_WORKING_MODEL",
+  "UPDATE_AVAILABILITY" = "UPDATE_AVAILABILITY",
   "UPDATE_SALARY" = "UPDATE_SALARY",
   "RESET_STATE" = "RESET_STATE",
   "UPDATE_SEARCH" = "UPDATE_SEARCH",
@@ -15,9 +15,9 @@ export type Salary = {
 
 export interface State {
   location: string;
-  availabilities: string[];
+  contracts: string[];
   specialties: string[];
-  workingModel: string;
+  availability: string;
   salary: Salary;
   search: string;
 }
@@ -32,8 +32,8 @@ export type UpdateLocationAction = ActionReturnType<
   string
 >;
 
-export type UpdateAvailabilitiesAction = ActionReturnType<
-  Type.UPDATE_AVAILABILITIES,
+export type UpdateContractsAction = ActionReturnType<
+  Type.UPDATE_CONTRACTS,
   string[]
 >;
 
@@ -42,8 +42,8 @@ export type UpdateSpecialtiesAction = ActionReturnType<
   string[]
 >;
 
-export type UpdateWorkingModelAction = ActionReturnType<
-  Type.UPDATE_WORKING_MODEL,
+export type UpdateAvailabilityAction = ActionReturnType<
+  Type.UPDATE_AVAILABILITY,
   string
 >;
 
@@ -55,9 +55,9 @@ export type UpdateSearchAction = ActionReturnType<Type.UPDATE_SEARCH, string>;
 
 export type Action =
   | UpdateLocationAction
-  | UpdateAvailabilitiesAction
+  | UpdateContractsAction
   | UpdateSpecialtiesAction
-  | UpdateWorkingModelAction
+  | UpdateAvailabilityAction
   | UpdateSalaryAction
   | ResetStateAction
   | UpdateSearchAction;
