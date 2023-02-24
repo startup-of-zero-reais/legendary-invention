@@ -16,6 +16,10 @@ export namespace LoadAllJob {
 }
 
 export const useLoadAllJob = (params?: LoadAllJob.Params) =>
-  useQuery(["@loadAlljobs", params], async () => {
-    return await getJobs(params);
-  });
+  useQuery(
+    ["@loadAlljobs", params],
+    async () => {
+      return await getJobs(params);
+    },
+    { retry: 0 }
+  );
