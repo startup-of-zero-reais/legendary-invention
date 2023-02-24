@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useLoadJob } from "@/domain";
 import WrapListVacancies from "@/components/WrapListVacancies";
 import { FilterProvider } from "@/components/Filter/context";
+import { AuthProvider } from "./context/auth";
 
 export default function Home() {
   let router = useRouter();
@@ -22,7 +23,7 @@ export default function Home() {
   }, [onOpen, router.query.vaga]);
 
   return (
-    <>
+    <AuthProvider>
       <Head>
         <title>{CONSTANTS.name_application}</title>
         <meta name="description" content={CONSTANTS.description_application} />
@@ -39,9 +40,7 @@ export default function Home() {
             gap={{ base: 2, md: 4, lg: 6 }}
             flexDirection={{ base: "column", lg: "row" }}
           >
-            <Box>
-              <Filter />
-            </Box>
+            <Filter />
             <Flex
               flexDirection="column"
               gap={{ base: 2, md: 4, lg: 6 }}
@@ -60,6 +59,6 @@ export default function Home() {
           </Flex>
         </FilterProvider>
       </Container>
-    </>
+    </AuthProvider>
   );
 }
