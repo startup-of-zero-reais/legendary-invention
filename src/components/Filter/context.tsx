@@ -47,6 +47,7 @@ const parseState = (state: State) => {
     availability: rest.availability,
     contracts: rest.contracts.join(","),
     techs: rest.specialties.join(","),
+    location: rest.location,
   };
 };
 

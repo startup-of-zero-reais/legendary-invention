@@ -26,11 +26,9 @@ type Props = {
   contracts: string[];
   specialties: string[];
   availability: string[];
-  locations: Location[];
 };
 
 const Filter: React.FC<Props> = ({
-  locations,
   specialties,
   contracts,
   availability,
@@ -65,7 +63,7 @@ const Filter: React.FC<Props> = ({
         variants={variants}
         transition={{ type: "easeInOut" }}
       >
-        <Location locations={locations} />
+        <Location />
 
         <Contracts contracts={contracts} />
 
@@ -86,7 +84,6 @@ const FilterWrap = () => {
         availability={availability}
         contracts={contracts}
         specialties={specialties}
-        locations={locations}
       />
     </Box>
   );

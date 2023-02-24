@@ -7,4 +7,4 @@ export namespace LoadMe {
 }
 
 export const useLoadMe = () =>
-  useQuery(["@loadme"], async () => await me(), { retry: 0 });
+  useQuery<Account>(["@loadme"], async () => await me(), { retry: 0 });
