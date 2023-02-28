@@ -1,6 +1,5 @@
-import { CONSTANTS } from "@/constants";
-import { useAuthentication } from "@/domain";
-import { LoginSchema } from "@/domain/validation";
+import { CONSTANTS } from "@/lib/constants";
+import { Authentication } from "@/domain";
 import {
   Button,
   Checkbox,
@@ -16,6 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { useMutation } from "react-query";
+import { auth } from "./api/auth";
+import { AxiosError } from "axios";
 
 type Input = {
   email: string;
@@ -24,14 +26,18 @@ type Input = {
 
 export default function Entrar() {
   const router = useRouter();
-  const { mutate, isLoading, error, isError } = useAuthentication({
-    onSuccess: () => {
-      router.push("/");
-    },
-  });
+  const login = useMutation<void, Error, Authentication.Params>(
+    ["Login"],
+    auth,
+    {
+      onSuccess: () => {
+        router.push("/");
+      },
+    }
+  );
 
   const onSubmit = (input: Input) => {
-    mutate(input);
+    login.mutate(input);
   };
 
   const hasError = (error?: string, touched?: boolean) => !!error && !!touched;
@@ -44,7 +50,6 @@ export default function Entrar() {
             Acesse sua conta {CONSTANTS.name_application}
           </Heading>
           <Formik
-            validationSchema={LoginSchema}
             initialValues={{ email: "", password: "" }}
             onSubmit={onSubmit}
           >
@@ -57,18 +62,18 @@ export default function Entrar() {
               touched,
             }) => (
               <Form onSubmit={handleSubmit}>
-                <FormControl isInvalid={isError} id="email">
+                <FormControl isInvalid={login.isError} id="email">
                   <FormLabel>Email</FormLabel>
                   <Input
                     onChange={handleChange}
                     onBlur={handleBlur}
                     name="email"
-                    isInvalid={isError}
+                    isInvalid={login.isError}
                     value={values.email}
                   />
-                  {isError ? (
+                  {login.isError ? (
                     <FormErrorMessage color="red" mb={4}>
-                      {error.message}
+                      {login.error.message}
                     </FormErrorMessage>
                   ) : (
                     hasError(errors.email, touched.email) && (
@@ -84,7 +89,7 @@ export default function Entrar() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     name="password"
-                    isInvalid={isError}
+                    isInvalid={login.isError}
                     type="password"
                     value={values.password}
                   />
@@ -104,7 +109,7 @@ export default function Entrar() {
                   </Stack>
 
                   <Button colorScheme={"blue"} variant={"solid"} type="submit">
-                    {isLoading ? <Spinner /> : "Login"}
+                    {login.isLoading ? <Spinner /> : "Login"}
                   </Button>
                 </Stack>
               </Form>

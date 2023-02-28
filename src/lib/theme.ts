@@ -81,20 +81,4 @@ export const theme = extendTheme({
       gradient: "linear-gradient(90deg, #fb3c4e 0%, #fb2491 100%)",
     },
   },
-  components: {
-    Menu: {
-      parts: ["item"],
-      baseStyle: {
-        item: {
-          background: "#383838",
-          _focus: {
-            background: "transparent",
-          },
-          _active: {
-            background: "rgba(0,0,0,0.5)",
-          },
-        },
-      },
-    },
-  },
 });

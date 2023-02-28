@@ -3,16 +3,19 @@ export type Account = {
   recruiter?: Recruiter;
 };
 
-type Candidate = {
+export type Candidate = {
   id: string;
   name: string;
   email: string;
   image: string;
 };
 
-type Recruiter = {
+export type Recruiter = {
   id: string;
   name: string;
   email: string;
   image: string;
+  companyID: string;
+  companyCNPJ: string;
+  companyStatus: string;
 };

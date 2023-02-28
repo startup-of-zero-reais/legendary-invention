@@ -21,11 +21,12 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 import Image from "next/image";
-import { useAuth } from "@/pages/context/auth";
+import { useAuth } from "@/context/auth";
+import ShowMe from "./show-me";
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
-  const { me } = useAuth();
+  const { whoAmi, profile, swapProfile, canSwap, activeProfile } = useAuth();
 
   return (
     <Box>
@@ -67,8 +68,8 @@ export default function WithSubnavigation() {
           </Flex>
         </Flex>
 
-        {me ? (
-          <span>AUTH</span>
+        {whoAmi ? (
+          <ShowMe />
         ) : (
           <Stack
             flex={{ base: 1, md: 0 }}
@@ -272,7 +273,7 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Procurar Trabalho",
+    label: "Procurar Vagas",
   },
   {
     label: "Minhas Vagas",

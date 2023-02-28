@@ -1,4 +1,4 @@
-import { useDebounce } from "@/utils/debounce";
+import { useDebounce } from "@/lib/debounce";
 import { Box, chakra, Flex, Text, useRangeSlider } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 

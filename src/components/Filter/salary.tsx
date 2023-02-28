@@ -1,4 +1,4 @@
-import { CONSTANTS } from "@/constants";
+import { CONSTANTS } from "@/lib/constants";
 import { Stack, Text } from "@chakra-ui/react";
 import React from "react";
 import RangeSlider from "../RangeSlider";

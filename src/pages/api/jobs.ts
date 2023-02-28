@@ -1,6 +1,6 @@
-import { request } from "@/request";
+import { request } from "@/server-lib/services";
 import { LoadAllJob, LoadJob } from "@/domain";
-import { buildQueryString } from "@/utils/build-query-string";
+import { buildQueryString } from "@/lib/build-query-string";
 
 export const getJobs = async (
   params?: LoadAllJob.Params

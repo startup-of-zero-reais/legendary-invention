@@ -1,4 +1,4 @@
-import { CONSTANTS } from "@/constants";
+import { CONSTANTS } from "@/lib/constants";
 import { Action, State, Type } from "./types";
 
 export const initialState: State = {

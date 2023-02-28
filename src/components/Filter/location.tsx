@@ -1,12 +1,17 @@
 import React from "react";
 import { Stack, Text, Select, IconButton, HStack } from "@chakra-ui/react";
 import { useFilter } from "./context";
-import { useLoadLocations } from "@/domain/usecases/load-locations";
 import { HiX } from "react-icons/hi";
+import { EmbeddedLocations } from "@/domain/models/location";
+import { useQuery } from "react-query";
+import { locations } from "@/pages/api/locations";
 
 const Location: React.FC = () => {
   const { updateLocation, state, isExpanded } = useFilter();
-  const { data } = useLoadLocations()
+  const { data } = useQuery<EmbeddedLocations>(["@loadlocations"], locations, {
+    cacheTime: 1000 * 60 * 60 * 24,
+    refetchOnMount: false,
+  });
 
   return (
     <Stack mt={{ base: isExpanded ? 4 : 0 }}>
@@ -31,10 +36,10 @@ const Location: React.FC = () => {
           size={"xs"}
           aria-label="limpar localidade"
           icon={<HiX />}
-          onClick={() => updateLocation('')}
+          onClick={() => updateLocation("")}
           variant="ghost"
           isDisabled={!state.location}
-          _disabled={{ cursor: 'not-allowed' }}
+          _disabled={{ cursor: "not-allowed" }}
         />
       </HStack>
     </Stack>

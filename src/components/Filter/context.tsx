@@ -1,6 +1,9 @@
-import { LoadAllJob, useLoadAllJob } from "@/domain";
+import { LoadAllJob } from "@/domain";
+import { Filters } from "@/domain/models/filters";
+import { getJobs } from "@/pages/api/jobs";
 import { useMediaQuery } from "@chakra-ui/react";
 import React, { useContext, useEffect, useReducer, useState } from "react";
+import { useQuery } from "react-query";
 import {
   resetState,
   updateContractsAction,
@@ -13,7 +16,11 @@ import {
 import { initialState, reducer } from "./reducer";
 import { Salary, State } from "./types";
 
-interface WithChildrenProps {
+interface FilterContextProps {
+  namedFilters: Filters.Embedded;
+}
+
+interface WithChildrenProps extends FilterContextProps {
   children: React.ReactNode;
 }
 
@@ -26,6 +33,7 @@ interface FilterProviderProps {
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
   updateSearch: (search: string) => void;
+  namedFilters: Filters.Embedded;
   jobs: LoadAllJob.Model;
   isLoading: boolean;
   isExpanded: boolean;
@@ -51,11 +59,17 @@ const parseState = (state: State) => {
   };
 };
 
-export function FilterProvider({ children }: WithChildrenProps) {
+export function FilterProvider({ children, namedFilters }: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const { data, isLoading } = useLoadAllJob(parseState(state));
+  const { data, isLoading } = useQuery(
+    ["@loadAlljobs", parseState(state)],
+    async () => {
+      return await getJobs(parseState(state));
+    },
+    { retry: 0 }
+  );
 
   const [isLargerThan992] = useMediaQuery("(min-width: 992px)", {
     ssr: true,
@@ -114,10 +128,11 @@ export function FilterProvider({ children }: WithChildrenProps) {
         updateSearch,
         updateClearAll,
         updateExpanded,
+        namedFilters,
         isExpanded: expanded,
         isClearAll: clearAll,
         state,
-        jobs: data as any,
+        jobs: data as LoadAllJob.Model,
         isLoading,
       }}
     >

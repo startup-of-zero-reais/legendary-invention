@@ -4,7 +4,7 @@ import { pt } from "date-fns/locale";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
 import React, { useMemo } from "react";
-import { imgLoader } from "@/utils/image-loader";
+import { imgLoader } from "@/lib/image-loader";
 
 type Props = {
   logo: string;
