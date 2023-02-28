@@ -17,7 +17,7 @@ import { initialState, reducer } from "./reducer";
 import { Salary, State } from "./types";
 
 interface FilterContextProps {
-  namedFilters: Filters.Embedded;
+  filters: Filters.Embedded["_embedded"];
 }
 
 interface WithChildrenProps extends FilterContextProps {
@@ -33,7 +33,7 @@ interface FilterProviderProps {
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
   updateSearch: (search: string) => void;
-  namedFilters: Filters.Embedded;
+  filters: Filters.Embedded["_embedded"];
   jobs: LoadAllJob.Model;
   isLoading: boolean;
   isExpanded: boolean;
@@ -59,7 +59,7 @@ const parseState = (state: State) => {
   };
 };
 
-export function FilterProvider({ children, namedFilters }: WithChildrenProps) {
+export function FilterProvider({ children, filters }: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -128,7 +128,7 @@ export function FilterProvider({ children, namedFilters }: WithChildrenProps) {
         updateSearch,
         updateClearAll,
         updateExpanded,
-        namedFilters,
+        filters,
         isExpanded: expanded,
         isClearAll: clearAll,
         state,
