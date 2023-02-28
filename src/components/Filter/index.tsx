@@ -1,17 +1,15 @@
-import React from "react";
-
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react";
 import { motion, Variants } from "framer-motion";
 
 // @Component Internal Applicaiton
 import Location from "./location";
 import Specialties from "./specialties";
-import WorkingModel from "./working-model";
+import Availability from "./availability";
 import Salary from "./salary";
 import Header from "./header";
-import Availabilities from "./availabilities";
+import Contracts from "./contracts";
 
-import { FilterProvider, useFilter } from "./context";
+import { useFilter } from "./context";
 
 type Filter = {
   minSalary: number;
@@ -22,20 +20,8 @@ type Filter = {
   workModel: string;
 };
 
-type Props = {
-  availabilities: string[];
-  specialties: string[];
-  workingModels: string[];
-  locations: Location[];
-};
-
-const Filter: React.FC<Props> = ({
-  locations,
-  specialties,
-  availabilities,
-  workingModels,
-}: Props) => {
-  const { isExpanded } = useFilter();
+function Filter() {
+  const { isExpanded, filters } = useFilter();
 
   const variants: Variants = {
     open: { height: "auto", visibility: "visible", opacity: 1 },
@@ -43,91 +29,44 @@ const Filter: React.FC<Props> = ({
   };
 
   return (
-    <Box
-      transition="200ms ease"
-      width={{ base: "full", lg: "300px" }}
-      bg="white"
-      border="1px"
-      borderColor={useColorModeValue("gray.200", "gray.700")}
-      minHeight={{ lg: "780px", base: 0 }}
-      flexShrink={0}
-      flexGrow={0}
-      p={{ base: 4, lg: 6 }}
-      borderRadius={{ base: "md", lg: "2xl" }}
-    >
-      <Header />
-
-      <Stack
-        as={motion.div}
-        initial={"closed"}
-        style={{ backgroundColor: "white" }}
-        animate={isExpanded ? "open" : "closed"}
-        variants={variants}
-        transition={{ type: "easeInOut" }}
+    <nav>
+      <Box
+        transition="200ms ease"
+        width={{ base: "full", lg: "300px" }}
+        bg="white"
+        border="1px"
+        borderColor={useColorModeValue("gray.200", "gray.700")}
+        minHeight={{ lg: "780px", base: 0 }}
+        flexShrink={0}
+        flexGrow={0}
+        p={{ base: 4, lg: 6 }}
+        borderRadius={{ base: "md", lg: "2xl" }}
       >
-        <Location locations={locations} />
+        <Header />
 
-        <Availabilities availabilities={availabilities} />
+        <Stack
+          as={motion.div}
+          initial={"closed"}
+          style={{ backgroundColor: "white" }}
+          animate={isExpanded ? "open" : "closed"}
+          variants={variants}
+          transition={{ type: "easeInOut" }}
+        >
+          <Location />
 
-        <Specialties specialties={specialties} />
+          <Contracts contracts={filters.contracts.map((c) => c.name)} />
 
-        <WorkingModel workingModels={workingModels} />
+          <Specialties specialties={filters.techs.map((t) => t.name)} />
 
-        <Salary />
-      </Stack>
-    </Box>
+          <Availability
+            availability={filters.availability.map((a) => a.name)}
+          />
+
+          <Salary />
+        </Stack>
+      </Box>
+    </nav>
   );
-};
+}
 
-const FilterWrap = () => {
-  return (
-    <FilterProvider>
-      <Filter
-        workingModels={workingModels}
-        availabilities={availabilities}
-        specialties={specialties}
-        locations={locations}
-      />
-    </FilterProvider>
-  );
-};
-
-// TODO - Remove get this from the API
-
-const workingModels = ["Home office", "Híbrido", "Presencial"];
-
-const availabilities = ["Freelance", "Full Time", "PJ", "CLT"];
-
-const specialties = [
-  "Frontend",
-  "Backend",
-  "Mobile",
-  "Full stack",
-  "UI Designer",
-  "UX Designer",
-];
-
-const locations = [
-  {
-    id: "any_id_1",
-    name: "Goiânia",
-  },
-  {
-    id: "any_id_2",
-    name: "São Paulo",
-  },
-  {
-    id: "any_id_3",
-    name: "Rio de Janeiro",
-  },
-  {
-    id: "any_id_4",
-    name: "Florianópolis",
-  },
-  {
-    id: "any_id_5",
-    name: "Chapecó",
-  },
-];
-
-export default FilterWrap;
+export default Filter;

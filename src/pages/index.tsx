@@ -1,33 +1,48 @@
 import Head from "next/head";
-import { Header, Filter, CardVacancy, ModalApplyVacancy } from "@/components";
 import {
-  Box,
-  Container,
-  Flex,
-  IconButton,
-  Input,
-  useColorModeValue,
-  useDisclosure,
-  VStack,
-} from "@chakra-ui/react";
-import { CONSTANTS } from "@/constants";
-import { Search2Icon } from "@chakra-ui/icons";
+  Header,
+  Filter,
+  ModalApplyVacancy,
+  Search,
+  WrapListVacancies,
+} from "@/components";
+import { Container, Flex, useDisclosure } from "@chakra-ui/react";
+import { CONSTANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { useEffect } from "react";
-import { useLoadJob, useLoadAllJob } from "@/domain";
+import { Account } from "@/domain";
+import { FilterProvider } from "@/components/Filter/context";
+import { AuthProvider } from "../context/auth";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
+import { Filters } from "@/domain/models/filters";
+import { makeAuth } from "./api/auth";
+import { Nullable } from "@/lib/nullable";
+import { filters } from "./api/filters";
+import { getJob } from "./api/jobs";
+import { useQuery } from "react-query";
 
-export default function Home() {
+type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
+
+type HomeProps = {
+  account: Nullable<Account>;
+  canSwap: boolean;
+  isAuth: boolean;
+  _embedded: Filters.Embedded["_embedded"];
+};
+
+export default function Home({ account, isAuth, canSwap, _embedded }: Props) {
   let router = useRouter();
   const { onOpen, isOpen, onClose } = useDisclosure();
+  const jobId = router.query.vaga as string;
 
-  const { data: listJob, isLoading: isLoadingListJob } = useLoadAllJob({
-    search: "Professor",
-  });
-
-  const { data: job } = useLoadJob({
-    id: router.query.vaga as string,
-  });
+  const jobQuery = useQuery(
+    ["@loadjob", jobId],
+    async () => await getJob(jobId),
+    {
+      enabled: !!jobId,
+      retry: 0,
+    }
+  );
 
   useEffect(() => {
     if (!router.query.vaga) return;
@@ -35,7 +50,7 @@ export default function Home() {
   }, [onOpen, router.query.vaga]);
 
   return (
-    <>
+    <AuthProvider {...{ canSwap, isAuth, account }}>
       <Head>
         <title>{CONSTANTS.name_application}</title>
         <meta name="description" content={CONSTANTS.description_application} />
@@ -45,61 +60,55 @@ export default function Home() {
       <Header />
 
       <Container maxW="container.lg" minHeight="calc(100vh - 68px)">
-        <Flex
-          minH="100%"
-          p={{ base: "2", md: "4", lg: "6" }}
-          gap={{ base: 2, md: 4, lg: 6 }}
-          flexDirection={{ base: "column", lg: "row" }}
-        >
-          <Box>
+        <FilterProvider filters={_embedded}>
+          <Flex
+            minH="100%"
+            p={{ base: "2", md: "4", lg: "6" }}
+            gap={{ base: 2, md: 4, lg: 6 }}
+            flexDirection={{ base: "column", lg: "row" }}
+          >
             <Filter />
-          </Box>
-          <Flex flexDirection="column" gap={{ base: 2, md: 4, lg: 6 }} w="full">
-            <Box>
-              <Flex
-                bg="white"
-                p={{ base: "2", md: "4", lg: "6" }}
-                border="1px"
-                borderColor={useColorModeValue("gray.200", "gray.700")}
-                borderRadius={{ base: "md", lg: "2xl" }}
-              >
-                <Input placeholder="Procurar vagas por título, empresa ou qualquer palavra chave..." />
-                <IconButton
-                  aria-label="Procurador de vagas"
-                  icon={<Search2Icon />}
-                  ml="2"
-                />
-              </Flex>
-            </Box>
-            <VStack
-              p={{ base: "2", md: "4", lg: "6" }}
-              gap={{ base: 0, md: 2, lg: 4 }}
-              bg="white"
-              border="1px"
-              borderColor={useColorModeValue("gray.200", "gray.700")}
-              borderRadius={{ base: "md", lg: "2xl" }}
-              alignItems={"stretch"}
+            <Flex
+              flexDirection="column"
+              gap={{ base: 2, md: 4, lg: 6 }}
+              w="full"
             >
-              {listJob?.map((job, key) => (
-                <CardVacancy
-                  index={key}
-                  key={key}
-                  job={job}
-                  isLoading={isLoadingListJob}
-                />
-              ))}
-
-              {!!job && !!router.query.vaga && (
+              <Search />
+              <WrapListVacancies />
+              {!!jobQuery.data && !!router.query.vaga && (
                 <ModalApplyVacancy
                   isOpen={isOpen}
                   onClose={onClose}
-                  job={job}
+                  job={jobQuery.data}
                 />
               )}
-            </VStack>
+            </Flex>
           </Flex>
-        </Flex>
+        </FilterProvider>
       </Container>
-    </>
+    </AuthProvider>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+  context
+) => {
+  const auth = makeAuth();
+  const [account, { _embedded }] = await Promise.all([
+    await makeAuth()
+      .getSessionFromContext(context)
+      .catch(() => null),
+    await filters(),
+  ]);
+  const isAuth = auth.isAuth(account);
+  const canSwap = auth.canSwap(account);
+
+  return {
+    props: {
+      account,
+      canSwap,
+      isAuth,
+      _embedded,
+    },
+  };
+};

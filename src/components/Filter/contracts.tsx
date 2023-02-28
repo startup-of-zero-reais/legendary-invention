@@ -3,11 +3,11 @@ import { Checkbox, CheckboxGroup, Stack, Text } from "@chakra-ui/react";
 import { useFilter } from "./context";
 
 type Props = {
-  availabilities: string[];
+  contracts: string[];
 };
 
-const Availabilities: React.FC<Props> = ({ availabilities }: Props) => {
-  const { state, updateAvailabilities } = useFilter();
+const Availabilities: React.FC<Props> = ({ contracts }: Props) => {
+  const { state, updateContracts } = useFilter();
 
   return (
     <Stack mt="24px">
@@ -16,17 +16,15 @@ const Availabilities: React.FC<Props> = ({ availabilities }: Props) => {
       </Text>
 
       <CheckboxGroup
-        onChange={(availabilities) =>
-          updateAvailabilities(availabilities as string[])
-        }
-        value={state.availabilities}
+        onChange={(contracts) => updateContracts(contracts as string[])}
+        value={state.contracts}
         colorScheme="blue"
       >
         <Stack>
-          {availabilities.map((availability, key) => (
-            <Checkbox key={key} value={availability}>
+          {contracts.map((contract, key) => (
+            <Checkbox key={key} value={contract}>
               <Text fontWeight="normal" fontSize="12" color="gray.300">
-                {availability}
+                {contract}
               </Text>
             </Checkbox>
           ))}

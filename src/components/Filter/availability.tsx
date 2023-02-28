@@ -3,11 +3,11 @@ import React from "react";
 import { useFilter } from "./context";
 
 type Props = {
-  workingModels: string[];
+  availability: string[];
 };
 
-const WorkingModel: React.FC<Props> = ({ workingModels }: Props) => {
-  const { state, updateWorkingModel } = useFilter();
+const Availability: React.FC<Props> = ({ availability }: Props) => {
+  const { state, updateAvailability: updateWorkingModel } = useFilter();
 
   return (
     <Stack mt="24px">
@@ -15,9 +15,9 @@ const WorkingModel: React.FC<Props> = ({ workingModels }: Props) => {
         Modelo de Trabalho
       </Text>
 
-      <RadioGroup onChange={updateWorkingModel} value={state.workingModel}>
+      <RadioGroup onChange={updateWorkingModel} value={state.availability}>
         <Stack>
-          {workingModels.map((model, index) => (
+          {availability.map((model, index) => (
             <Radio key={index} value={model}>
               <Text fontSize="12" fontWeight="normal" color="gray.300">
                 {model}
@@ -30,4 +30,4 @@ const WorkingModel: React.FC<Props> = ({ workingModels }: Props) => {
   );
 };
 
-export default WorkingModel;
+export default Availability;

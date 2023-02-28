@@ -1,28 +1,41 @@
+import { LoadAllJob } from "@/domain";
+import { Filters } from "@/domain/models/filters";
+import { getJobs } from "@/pages/api/jobs";
 import { useMediaQuery } from "@chakra-ui/react";
 import React, { useContext, useEffect, useReducer, useState } from "react";
+import { useQuery } from "react-query";
 import {
   resetState,
-  updateAvailabilitiesAction,
+  updateContractsAction,
   updateLocationAction,
   updateSalaryAction,
+  updateSearchAction,
   updateSpecialtiesAction,
-  updateWorkingModelAction,
+  updateAvailabilityAction,
 } from "./actions";
 import { initialState, reducer } from "./reducer";
 import { Salary, State } from "./types";
 
-interface WithChildrenProps {
+interface FilterContextProps {
+  filters: Filters.Embedded["_embedded"];
+}
+
+interface WithChildrenProps extends FilterContextProps {
   children: React.ReactNode;
 }
 
 interface FilterProviderProps {
   updateLocation: (location: string) => void;
-  updateAvailabilities: (availabilities: string[]) => void;
+  updateContracts: (contracts: string[]) => void;
   updateSpecialties: (specialties: string[]) => void;
-  updateWorkingModel: (workingModel: string) => void;
+  updateAvailability: (availability: string) => void;
   updateSalary: (salary: Salary) => void;
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
+  updateSearch: (search: string) => void;
+  filters: Filters.Embedded["_embedded"];
+  jobs: LoadAllJob.Model;
+  isLoading: boolean;
   isExpanded: boolean;
   isClearAll: boolean;
   state: State;
@@ -32,10 +45,31 @@ const FilterContext = React.createContext<FilterProviderProps>(
   {} as FilterProviderProps
 );
 
-export function FilterProvider({ children }: WithChildrenProps) {
+const parseState = (state: State) => {
+  const { salary, ...rest } = state;
+
+  return {
+    search: rest.search,
+    minSalary: salary.min,
+    maxSalary: salary.max,
+    availability: rest.availability,
+    contracts: rest.contracts.join(","),
+    techs: rest.specialties.join(","),
+    location: rest.location,
+  };
+};
+
+export function FilterProvider({ children, filters }: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const { data, isLoading } = useQuery(
+    ["@loadAlljobs", parseState(state)],
+    async () => {
+      return await getJobs(parseState(state));
+    },
+    { retry: 0 }
+  );
 
   const [isLargerThan992] = useMediaQuery("(min-width: 992px)", {
     ssr: true,
@@ -50,14 +84,16 @@ export function FilterProvider({ children }: WithChildrenProps) {
   const updateLocation = (location: string) =>
     dispatch(updateLocationAction(location));
 
-  const updateAvailabilities = (availabilities: string[]) =>
-    dispatch(updateAvailabilitiesAction(availabilities));
+  const updateContracts = (contracts: string[]) =>
+    dispatch(updateContractsAction(contracts));
 
   const updateSpecialties = (specialties: string[]) =>
     dispatch(updateSpecialtiesAction(specialties));
 
-  const updateWorkingModel = (workingModel: string) =>
-    dispatch(updateWorkingModelAction(workingModel));
+  const updateAvailability = (availability: string) =>
+    dispatch(updateAvailabilityAction(availability));
+
+  const updateSearch = (search: string) => dispatch(updateSearchAction(search));
 
   const updateSalary = (salary: Salary) => dispatch(updateSalaryAction(salary));
 
@@ -85,15 +121,19 @@ export function FilterProvider({ children }: WithChildrenProps) {
     <FilterContext.Provider
       value={{
         updateLocation,
-        updateAvailabilities,
+        updateContracts,
         updateSpecialties,
-        updateWorkingModel,
+        updateAvailability,
         updateSalary,
+        updateSearch,
         updateClearAll,
         updateExpanded,
+        filters,
         isExpanded: expanded,
         isClearAll: clearAll,
         state,
+        jobs: data as LoadAllJob.Model,
+        isLoading,
       }}
     >
       {children}
