@@ -21,7 +21,17 @@ const theme = extendTheme({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false, // prevent refetch on focus window
+            staleTime: 1000 * 60 * 60, // 1 hour to consider stale request
+          },
+        },
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>

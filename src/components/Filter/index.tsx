@@ -12,6 +12,7 @@ import Header from "./header";
 import Contracts from "./contracts";
 
 import { FilterProvider, useFilter } from "./context";
+import { LoadFilters, useLoadFilters } from "@/domain/usecases/load-filters";
 
 type Filter = {
   minSalary: number;
@@ -34,6 +35,18 @@ const Filter: React.FC<Props> = ({
   availability,
 }: Props) => {
   const { isExpanded } = useFilter();
+  const { data } = useLoadFilters()
+  
+  let _embedded: LoadFilters.Embedded['_embedded'] = {
+    techs: [],
+    contracts: [],
+    availability: [],
+  };
+
+  if (data) {
+    console.log({data})
+    _embedded = data._embedded
+  }
 
   const variants: Variants = {
     open: { height: "auto", visibility: "visible", opacity: 1 },
@@ -65,11 +78,11 @@ const Filter: React.FC<Props> = ({
       >
         <Location />
 
-        <Contracts contracts={contracts} />
+        <Contracts contracts={_embedded.contracts.map(c => c.name)} />
 
-        <Specialties specialties={specialties} />
+        <Specialties specialties={_embedded.techs.map(t => t.name)} />
 
-        <Availability availability={availability} />
+        <Availability availability={_embedded.availability.map(a => a.name)} />
 
         <Salary />
       </Stack>
