@@ -27,15 +27,10 @@ type HomeProps = {
   account: Nullable<Account>;
   canSwap: boolean;
   isAuth: boolean;
-  namedFilters: Filters.Embedded;
+  _embedded: Filters.Embedded["_embedded"];
 };
 
-export default function Home({
-  account,
-  isAuth,
-  canSwap,
-  namedFilters,
-}: Props) {
+export default function Home({ account, isAuth, canSwap, _embedded }: Props) {
   let router = useRouter();
   const { onOpen, isOpen, onClose } = useDisclosure();
   const jobId = router.query.vaga as string;
@@ -55,7 +50,7 @@ export default function Home({
   }, [onOpen, router.query.vaga]);
 
   return (
-    <AuthProvider {...{ canSwap, isAuth, account, namedFilters }}>
+    <AuthProvider {...{ canSwap, isAuth, account }}>
       <Head>
         <title>{CONSTANTS.name_application}</title>
         <meta name="description" content={CONSTANTS.description_application} />
@@ -65,7 +60,7 @@ export default function Home({
       <Header />
 
       <Container maxW="container.lg" minHeight="calc(100vh - 68px)">
-        <FilterProvider {...{ namedFilters }}>
+        <FilterProvider filters={_embedded}>
           <Flex
             minH="100%"
             p={{ base: "2", md: "4", lg: "6" }}
@@ -99,7 +94,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context
 ) => {
   const auth = makeAuth();
-  const [account, namedFilters] = await Promise.all([
+  const [account, { _embedded }] = await Promise.all([
     await makeAuth()
       .getSessionFromContext(context)
       .catch(() => null),
@@ -113,7 +108,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
       account,
       canSwap,
       isAuth,
-      namedFilters,
+      _embedded,
     },
   };
 };

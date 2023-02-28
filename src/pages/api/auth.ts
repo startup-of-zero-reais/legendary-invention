@@ -2,23 +2,19 @@ import { Account, LoadMe } from "@/domain";
 import { Authentication } from "@/domain/usecases/authentication";
 import { Nullable } from "@/lib/nullable";
 import { request } from "@/server-lib/services";
-import { AxiosError } from "axios";
-import { GetServerSidePropsContext } from "next";
+import { AxiosError, HttpStatusCode } from "axios";
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
+import { serialize } from "cookie";
 
-export const auth = async (auth?: Authentication.Params): Promise<void> => {
-  try {
-    await request.post(`/auth/login`, {
-      email: auth?.email,
-      password: auth?.password,
-    });
-  } catch (error) {
-    const err = error as AxiosError;
-    if (err.response?.status === 401) {
-      throw new Error("Email ou senha incorreto.");
-    }
-
-    throw new Error("Erro desconhecido volte mais tarde.");
-  }
+export const auth = async (auth?: Authentication.Params) => {
+  return await request.post(`/auth/login`, {
+    email: auth?.email,
+    password: auth?.password,
+  });
 };
 
 export const me = async (): Promise<LoadMe.Model> => {
@@ -54,3 +50,46 @@ export class Auth {
 }
 
 export const makeAuth = (): Auth => new Auth();
+
+// Email
+// Password
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "POST") {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res
+          .status(HttpStatusCode.BadRequest)
+          .json({ message: "Faltando credenciais" });
+      }
+
+      const response = await auth({ email, password });
+
+      res.setHeader(
+        "Set-Cookie",
+        serialize("session", response.headers["session"], { path: "/" })
+      );
+
+      return res.redirect(302, "/");
+    } catch (error) {
+      const errorMessage: Record<number, string> = {
+        400: "Preenchimento incorreto",
+        401: "Não autorizado",
+        403: "Proibido",
+        0: "Ocorreu um problema tente novamente mais tarde",
+      };
+      if (error instanceof AxiosError) {
+        return res
+          .status(error.response?.status || HttpStatusCode.InternalServerError)
+          .json({ message: errorMessage[error.response?.status || 0] });
+      }
+      return res
+        .status(HttpStatusCode.InternalServerError)
+        .send({ message: errorMessage[0] });
+    }
+  }
+}

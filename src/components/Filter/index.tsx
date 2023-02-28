@@ -10,7 +10,6 @@ import Header from "./header";
 import Contracts from "./contracts";
 
 import { useFilter } from "./context";
-import { LoadFilters } from "@/domain/usecases/load-filters";
 
 type Filter = {
   minSalary: number;
@@ -22,17 +21,7 @@ type Filter = {
 };
 
 function Filter() {
-  const { isExpanded, namedFilters } = useFilter();
-
-  let _embedded: LoadFilters.Embedded["_embedded"] = {
-    techs: [],
-    contracts: [],
-    availability: [],
-  };
-
-  if (namedFilters) {
-    _embedded = namedFilters._embedded;
-  }
+  const { isExpanded, filters } = useFilter();
 
   const variants: Variants = {
     open: { height: "auto", visibility: "visible", opacity: 1 },
@@ -65,12 +54,12 @@ function Filter() {
         >
           <Location />
 
-          <Contracts contracts={_embedded.contracts.map((c) => c.name)} />
+          <Contracts contracts={filters.contracts.map((c) => c.name)} />
 
-          <Specialties specialties={_embedded.techs.map((t) => t.name)} />
+          <Specialties specialties={filters.techs.map((t) => t.name)} />
 
           <Availability
-            availability={_embedded.availability.map((a) => a.name)}
+            availability={filters.availability.map((a) => a.name)}
           />
 
           <Salary />

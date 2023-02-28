@@ -16,8 +16,7 @@ import {
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useMutation } from "react-query";
-import { auth } from "./api/auth";
-import { AxiosError } from "axios";
+import { bff } from "@/server-lib/services";
 
 type Input = {
   email: string;
@@ -28,11 +27,11 @@ export default function Entrar() {
   const router = useRouter();
   const login = useMutation<void, Error, Authentication.Params>(
     ["Login"],
-    auth,
+    async (params) => await bff.post("/api/auth", params),
     {
-      onSuccess: () => {
-        router.push("/");
-      },
+      // onSuccess: () => {
+      //   router.push("/");
+      // },
     }
   );
 
