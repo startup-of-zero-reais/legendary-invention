@@ -11,7 +11,7 @@ import Salary from "./salary";
 import Header from "./header";
 import Contracts from "./contracts";
 
-import { FilterProvider, useFilter } from "./context";
+import { useFilter } from "./context";
 import { LoadFilters, useLoadFilters } from "@/domain/usecases/load-filters";
 
 type Filter = {
@@ -23,17 +23,7 @@ type Filter = {
   workModel: string;
 };
 
-type Props = {
-  contracts: string[];
-  specialties: string[];
-  availability: string[];
-};
-
-const Filter: React.FC<Props> = ({
-  specialties,
-  contracts,
-  availability,
-}: Props) => {
+const Filter: React.FC = () => {
   const { isExpanded } = useFilter();
   const { data } = useLoadFilters()
   
@@ -90,54 +80,6 @@ const Filter: React.FC<Props> = ({
   );
 };
 
-const FilterWrap = () => {
-  return (
-    <Box>
-      <Filter
-        availability={availability}
-        contracts={contracts}
-        specialties={specialties}
-      />
-    </Box>
-  );
-};
-
-// TODO - Remove get this from the API
-
-const availability = ["Home office", "Híbrido", "Presencial"];
-
-const contracts = ["CLT", "Temporário", "Estágio", "Flex", "Autonomo"];
-
-const specialties = [
-  "Frontend",
-  "Backend",
-  "Mobile",
-  "Full stack",
-  "UI Designer",
-  "UX Designer",
-];
-
-const locations = [
-  {
-    id: "any_id_1",
-    name: "Goiânia",
-  },
-  {
-    id: "any_id_2",
-    name: "São Paulo",
-  },
-  {
-    id: "any_id_3",
-    name: "Rio de Janeiro",
-  },
-  {
-    id: "any_id_4",
-    name: "Florianópolis",
-  },
-  {
-    id: "any_id_5",
-    name: "Chapecó",
-  },
-];
+const FilterWrap = () => <Box><Filter /></Box>;
 
 export default FilterWrap;
