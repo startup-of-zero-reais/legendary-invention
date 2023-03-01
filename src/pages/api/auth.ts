@@ -57,7 +57,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "POST") {
+  if (req.method && req.method.toUpperCase() === "POST") {
     try {
       const { email, password } = req.body;
 
@@ -74,7 +74,7 @@ export default async function handler(
         serialize("session", response.headers["session"], { path: "/" })
       );
 
-      return res.redirect(302, "/");
+      return res.status(200).send(req.headers.origin);
     } catch (error) {
       const errorMessage: Record<number, string> = {
         400: "Preenchimento incorreto",

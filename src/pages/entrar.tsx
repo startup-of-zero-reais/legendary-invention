@@ -1,5 +1,4 @@
 import { CONSTANTS } from "@/lib/constants";
-import { Authentication } from "@/domain";
 import {
   Button,
   Checkbox,
@@ -10,36 +9,48 @@ import {
   Input,
   Stack,
   Image,
-  FormErrorMessage,
-  Spinner,
 } from "@chakra-ui/react";
-import { Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import { useMutation } from "react-query";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { bff } from "@/server-lib/services";
+import { useState } from "react";
 
 type Input = {
   email: string;
   password: string;
 };
 
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+    password: yup.string().min(6).required(),
+  })
+  .required();
+
 export default function Entrar() {
-  const router = useRouter();
-  const login = useMutation<void, Error, Authentication.Params>(
-    ["Login"],
-    async (params) => await bff.post("/api/auth", params),
-    {
-      // onSuccess: () => {
-      //   router.push("/");
-      // },
-    }
-  );
+  const [error, setError] = useState("");
 
-  const onSubmit = (input: Input) => {
-    login.mutate(input);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isValid },
+  } = useForm<Input>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    resolver: yupResolver(schema),
+    mode: "onChange",
+  });
+
+  const onSubmit = async (data: Input) => {
+    const response = await bff
+      .post("/api/auth", data)
+      .catch((error) => setError(error.response.data.message));
+
+    if (response) window.location = response?.data;
   };
-
-  const hasError = (error?: string, touched?: boolean) => !!error && !!touched;
 
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
@@ -48,72 +59,46 @@ export default function Entrar() {
           <Heading fontWeight="bold" fontSize={"2xl"}>
             Acesse sua conta {CONSTANTS.name_application}
           </Heading>
-          <Formik
-            initialValues={{ email: "", password: "" }}
-            onSubmit={onSubmit}
-          >
-            {({
-              values,
-              handleSubmit,
-              handleChange,
-              handleBlur,
-              errors,
-              touched,
-            }) => (
-              <Form onSubmit={handleSubmit}>
-                <FormControl isInvalid={login.isError} id="email">
-                  <FormLabel>Email</FormLabel>
-                  <Input
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    name="email"
-                    isInvalid={login.isError}
-                    value={values.email}
-                  />
-                  {login.isError ? (
-                    <FormErrorMessage color="red" mb={4}>
-                      {login.error.message}
-                    </FormErrorMessage>
-                  ) : (
-                    hasError(errors.email, touched.email) && (
-                      <FormErrorMessage color="red" mb={4}>
-                        {errors.email}
-                      </FormErrorMessage>
-                    )
-                  )}
-                </FormControl>
-                <FormControl id="password">
-                  <FormLabel>Senha</FormLabel>
-                  <Input
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    name="password"
-                    isInvalid={login.isError}
-                    type="password"
-                    value={values.password}
-                  />
-                  {hasError(errors.password, touched.password) && (
-                    <FormErrorMessage color="red" mb={4}>
-                      {errors.password}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <Stack spacing={6}>
-                  <Stack
-                    direction={{ base: "column", sm: "row" }}
-                    align={"start"}
-                    justify={"space-between"}
-                  >
-                    <Checkbox>Lembrar-me</Checkbox>
-                  </Stack>
 
-                  <Button colorScheme={"blue"} variant={"solid"} type="submit">
-                    {login.isLoading ? <Spinner /> : "Login"}
-                  </Button>
-                </Stack>
-              </Form>
-            )}
-          </Formik>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormControl isInvalid={!!errors.email?.message} id="email">
+              <FormLabel>Email</FormLabel>
+              <Input
+                {...register("email", { required: true })}
+                isInvalid={!!errors.email?.message}
+              />
+            </FormControl>
+
+            <FormControl id="password">
+              <FormLabel>Senha</FormLabel>
+              <Input
+                {...register("password", { required: true })}
+                isInvalid={!!errors.password?.message}
+                type="password"
+              />
+            </FormControl>
+
+            <Stack spacing={6}>
+              <Stack
+                direction={{ base: "column", sm: "row" }}
+                align={"start"}
+                justify={"space-between"}
+              >
+                <Checkbox>Lembrar-me</Checkbox>
+              </Stack>
+
+              <Button
+                colorScheme={"blue"}
+                variant={"solid"}
+                type="submit"
+                isDisabled={!isValid}
+              >
+                Login
+              </Button>
+
+              {!!error && <span>{error}</span>}
+            </Stack>
+          </form>
         </Stack>
       </Flex>
       <Flex flex={1} display={{ base: "none", md: "none", lg: "flex" }}>
