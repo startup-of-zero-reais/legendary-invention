@@ -10,7 +10,7 @@ import { Container, Flex, useDisclosure } from "@chakra-ui/react";
 import { CONSTANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Account } from "@/domain";
+import { Account, JobModel } from "@/domain";
 import { FilterProvider } from "@/components/Filter/context";
 import { AuthProvider } from "../context/auth";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
@@ -19,35 +19,39 @@ import { makeAuth } from "./api/auth";
 import { Nullable } from "@/lib/nullable";
 import { filters } from "./api/filters";
 import { getJob } from "./api/jobs";
-import { useQuery } from "react-query";
+import { locations } from "./api/locations";
+import { Location } from "@/domain/models/location";
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 type HomeProps = {
   account: Nullable<Account>;
+  job: Nullable<JobModel>;
   canSwap: boolean;
   isAuth: boolean;
   _embedded: Filters.Embedded["_embedded"];
+  _embedded_location: Location[];
 };
 
-export default function Home({ account, isAuth, canSwap, _embedded }: Props) {
-  let router = useRouter();
-  const { onOpen, isOpen, onClose } = useDisclosure();
-  const jobId = router.query.vaga as string;
+export default function Home({
+  account,
+  isAuth,
+  canSwap,
+  _embedded,
+  _embedded_location,
+  job,
+}: Props) {
+  let {
+    query: { vaga },
+  } = useRouter();
+  const vacancyId = vaga as string;
 
-  const jobQuery = useQuery(
-    ["@loadjob", jobId],
-    async () => await getJob(jobId),
-    {
-      enabled: !!jobId,
-      retry: 0,
-    }
-  );
+  const { onOpen, isOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    if (!router.query.vaga) return;
+    if (!vacancyId) return;
     onOpen();
-  }, [onOpen, router.query.vaga]);
+  }, [onOpen, vacancyId]);
 
   return (
     <AuthProvider {...{ canSwap, isAuth, account }}>
@@ -60,7 +64,7 @@ export default function Home({ account, isAuth, canSwap, _embedded }: Props) {
       <Header />
 
       <Container maxW="container.lg" minHeight="calc(100vh - 68px)">
-        <FilterProvider filters={_embedded}>
+        <FilterProvider locations={_embedded_location} filters={_embedded}>
           <Flex
             minH="100%"
             p={{ base: "2", md: "4", lg: "6" }}
@@ -75,11 +79,11 @@ export default function Home({ account, isAuth, canSwap, _embedded }: Props) {
             >
               <Search />
               <WrapListVacancies />
-              {!!jobQuery.data && !!router.query.vaga && (
+              {!!job && !!vacancyId && (
                 <ModalApplyVacancy
                   isOpen={isOpen}
                   onClose={onClose}
-                  job={jobQuery.data}
+                  job={job}
                 />
               )}
             </Flex>
@@ -93,13 +97,24 @@ export default function Home({ account, isAuth, canSwap, _embedded }: Props) {
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context
 ) => {
+  const {
+    query: { vaga },
+  } = context;
+
+  const vacancyId = vaga as string;
+
   const auth = makeAuth();
-  const [account, { _embedded }] = await Promise.all([
-    await makeAuth()
-      .getSessionFromContext(context)
-      .catch(() => null),
-    await filters(),
-  ]);
+
+  const [account, { _embedded }, job, { _embedded: _embedded_location }] =
+    await Promise.all([
+      await makeAuth()
+        .getSessionFromContext(context)
+        .catch(() => null),
+      await filters(),
+      vacancyId ? await getJob(vacancyId) : null,
+      await locations(),
+    ]);
+
   const isAuth = auth.isAuth(account);
   const canSwap = auth.canSwap(account);
 
@@ -108,7 +123,9 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
       account,
       canSwap,
       isAuth,
+      job,
       _embedded,
+      _embedded_location,
     },
   };
 };
