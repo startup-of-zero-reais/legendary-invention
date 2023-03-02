@@ -77,9 +77,9 @@ export default async function handler(
       return res.status(200).send(req.headers.origin);
     } catch (error) {
       const errorMessage: Record<number, string> = {
-        400: "Preenchimento incorreto",
-        401: "Não autorizado",
-        403: "Proibido",
+        400: "Email ou senha incorreto.",
+        401: "Não autorizado.",
+        403: "Acesso negado.",
         0: "Ocorreu um problema tente novamente mais tarde",
       };
       if (error instanceof AxiosError) {
