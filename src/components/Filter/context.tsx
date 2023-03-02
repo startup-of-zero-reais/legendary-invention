@@ -1,5 +1,6 @@
 import { LoadAllJob } from "@/domain";
 import { Filters } from "@/domain/models/filters";
+import { Location } from "@/domain/models/location";
 import { getJobs } from "@/pages/api/jobs";
 import { useMediaQuery } from "@chakra-ui/react";
 import React, { useContext, useEffect, useReducer, useState } from "react";
@@ -18,6 +19,7 @@ import { Salary, State } from "./types";
 
 interface FilterContextProps {
   filters: Filters.Embedded["_embedded"];
+  locations: Location[];
 }
 
 interface WithChildrenProps extends FilterContextProps {
@@ -33,6 +35,7 @@ interface FilterProviderProps {
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
   updateSearch: (search: string) => void;
+  locations: Location[];
   filters: Filters.Embedded["_embedded"];
   jobs: LoadAllJob.Model;
   isLoading: boolean;
@@ -59,7 +62,11 @@ const parseState = (state: State) => {
   };
 };
 
-export function FilterProvider({ children, filters }: WithChildrenProps) {
+export function FilterProvider({
+  children,
+  filters,
+  locations,
+}: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -134,6 +141,7 @@ export function FilterProvider({ children, filters }: WithChildrenProps) {
         state,
         jobs: data as LoadAllJob.Model,
         isLoading,
+        locations,
       }}
     >
       {children}
