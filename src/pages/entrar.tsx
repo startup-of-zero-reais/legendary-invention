@@ -5,6 +5,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Heading,
   Input,
   Stack,
@@ -14,7 +15,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { bff } from "@/server-lib/services";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { AxiosError } from "axios";
+import { GetServerSideProps } from "next";
+import { makeAuth } from "./api/auth";
+import { useRouter } from "next/router";
 
 type Input = {
   email: string;
@@ -29,6 +34,8 @@ const schema = yup
   .required();
 
 export default function Entrar() {
+  const { replace } = useRouter();
+
   const [error, setError] = useState("");
 
   const {
@@ -44,13 +51,19 @@ export default function Entrar() {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: Input) => {
-    const response = await bff
-      .post("/api/auth", data)
-      .catch((error) => setError(error.response.data.message));
-
-    if (response) window.location = response?.data;
-  };
+  const onSubmit = useCallback(
+    async (data: Input) => {
+      try {
+        const response = await bff.post("/api/auth", data);
+        if (response) replace(response.data);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          setError(error.response?.data.message);
+        }
+      }
+    },
+    [replace]
+  );
 
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
@@ -61,12 +74,16 @@ export default function Entrar() {
           </Heading>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl isInvalid={!!errors.email?.message} id="email">
+            <FormControl
+              isInvalid={!!errors.email?.message || !!error}
+              id="email"
+            >
               <FormLabel>Email</FormLabel>
               <Input
                 {...register("email", { required: true })}
                 isInvalid={!!errors.email?.message}
               />
+              {!!error && <FormErrorMessage>{error}</FormErrorMessage>}
             </FormControl>
 
             <FormControl id="password">
@@ -95,8 +112,6 @@ export default function Entrar() {
               >
                 Login
               </Button>
-
-              {!!error && <span>{error}</span>}
             </Stack>
           </form>
         </Stack>
@@ -113,3 +128,21 @@ export default function Entrar() {
     </Stack>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const auth = makeAuth();
+  const account = await auth.getSessionFromContext(context).catch(() => null);
+
+  if (auth.isAuth(account)) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
