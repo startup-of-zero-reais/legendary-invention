@@ -8,3 +8,4 @@ export { default as ModalApplyVacancy } from "./ModalApplyVacancy";
 export { default as Techs } from "./Techs";
 export { default as Search } from "./Search";
 export { default as WrapListVacancies } from "./WrapListVacancies";
+export { RenderIf } from './helpers/render-if'
