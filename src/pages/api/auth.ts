@@ -27,8 +27,8 @@ export default async function handler(
       return res.status(200).send(req.headers.origin);
     } catch (error) {
       const errorMessage: Record<number, string> = {
-        400: "Email ou senha incorreto.",
-        401: "Não autorizado.",
+        400: "Credenciais inválidas.",
+        401: "Credenciais inválidas.",
         403: "Acesso negado.",
         0: "Ocorreu um problema tente novamente mais tarde",
       };
