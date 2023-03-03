@@ -5,6 +5,7 @@ import {
   ModalApplyVacancy,
   Search,
   WrapListVacancies,
+  RenderIf,
 } from "@/components";
 import { Container, Flex, useDisclosure } from "@chakra-ui/react";
 import { CONSTANTS } from "@/lib/constants";
@@ -41,10 +42,8 @@ export default function Home({
   locations,
   job,
 }: Props) {
-  let {
-    query: { vaga },
-  } = useRouter();
-  const vacancyId = vaga as string;
+  let { query: { vaga } } = useRouter();
+  const vacancyId = vaga?.toString();
 
   const { onOpen, isOpen, onClose } = useDisclosure();
 
@@ -72,20 +71,23 @@ export default function Home({
             flexDirection={{ base: "column", lg: "row" }}
           >
             <Filter />
+
             <Flex
               flexDirection="column"
               gap={{ base: 2, md: 4, lg: 6 }}
               w="full"
             >
               <Search />
+              
               <WrapListVacancies />
-              {!!job && !!vacancyId && (
+              
+              <RenderIf condition={!!job && !!vacancyId}>
                 <ModalApplyVacancy
-                  isOpen={isOpen}
-                  onClose={onClose}
-                  job={job}
-                />
-              )}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    job={job!}
+                  />
+              </RenderIf>
             </Flex>
           </Flex>
         </FilterProvider>
