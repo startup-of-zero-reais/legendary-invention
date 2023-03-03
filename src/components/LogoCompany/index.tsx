@@ -1,4 +1,4 @@
-import { Stack, useColorModeValue } from "@chakra-ui/react";
+import { Box, Stack, useColorModeValue } from "@chakra-ui/react";
 import Image from "next/image";
 import React from "react";
 
@@ -11,19 +11,27 @@ const LogoCompany: React.FC<Props> = ({ src }) => {
     <Stack
       bg={"white"}
       border="1px"
-      p={3}
+      p={{ base: 1, md: 2 }}
       justifyContent={"center"}
       borderRadius={"md"}
       borderColor={useColorModeValue("gray.200", "gray.700")}
       flexShrink={0}
     >
-      <Image
-        src={src}
-        alt="Logo da empresa"
-        width={40}
-        height={40}
-        loader={({ src }) => src}
-      />
+      <Box
+        w={{ base: 14, md: 24}}
+        h={{ base: 14, md: 24}}
+        rounded={{ base: "sm", md: "md" }}
+        position="relative"
+        overflow="hidden"
+      >
+        <Image
+          src={src}
+          alt="Logo da empresa"
+          style={{ objectFit: "cover" }}
+          loader={({ src }) => src}
+          fill
+        />
+      </Box>
     </Stack>
   );
 };

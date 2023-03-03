@@ -8,10 +8,11 @@ const Salary: React.FC = () => {
   const { updateSalary, isClearAll } = useFilter();
 
   return (
-    <Stack mt="24px">
-      <Text fontWeight="bold" fontSize="14" mb="4">
+    <Stack rowGap={2}>
+      <Text fontWeight="bold" fontSize="14">
         Salário
       </Text>
+      
       <RangeSlider
         reset={isClearAll}
         minMaxValue={([min, max]) => updateSalary({ max, min })}

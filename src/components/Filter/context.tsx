@@ -1,7 +1,7 @@
 import { LoadAllJob } from "@/domain";
 import { Filters } from "@/domain/models/filters";
 import { Location } from "@/domain/models/location";
-import { getJobs } from "@/pages/api/jobs";
+import { getJobs } from "@/server-lib/api/jobs";
 import { useMediaQuery } from "@chakra-ui/react";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { useQuery } from "react-query";
@@ -72,9 +72,7 @@ export function FilterProvider({
   const [expanded, setExpanded] = useState(false);
   const { data, isLoading } = useQuery(
     ["@loadAlljobs", parseState(state)],
-    async () => {
-      return await getJobs(parseState(state));
-    },
+    async () =>  await getJobs(parseState(state)),
     { retry: 0 }
   );
 

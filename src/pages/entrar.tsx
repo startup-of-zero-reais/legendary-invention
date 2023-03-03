@@ -7,122 +7,176 @@ import {
   FormLabel,
   FormErrorMessage,
   Heading,
-  Input,
+  Input as ChakraInput,
   Stack,
   Image,
+  Spinner,
+  Spacer,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  FormHelperText,
+  VStack,
+  useTheme,
+  ScaleFade,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { bff } from "@/server-lib/services";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { AxiosError } from "axios";
 import { GetServerSideProps } from "next";
-import { makeAuth } from "./api/auth";
+import { AuthFactory } from "@/server-lib/factory/auth";
 import { useRouter } from "next/router";
+import { Input, RenderIf } from "@/components";
 
-type Input = {
+type FormInputs = {
   email: string;
   password: string;
 };
 
 const schema = yup
   .object({
-    email: yup.string().email().required(),
-    password: yup.string().min(6).required(),
+    email: yup.string()
+      .email('Forneça um e-mail válido')
+      .required('O campo e-mail é obrigatório'),
+    password: yup.string()
+      .min(6, 'O campo de senha deve conter no mínimo 6 caracteres')
+      .required('O campo de senha é obrigatório'),
   })
   .required();
 
 export default function Entrar() {
   const { replace } = useRouter();
-
   const [error, setError] = useState("");
+  const theme = useTheme()
 
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid },
-  } = useForm<Input>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<FormInputs>({
+    defaultValues: { email: "", password: "" },
     resolver: yupResolver(schema),
     mode: "onChange",
   });
 
+  const timeout = useRef<NodeJS.Timeout>(null!);
+  const setErrorWithTimeout = useCallback((msg: string, seconds = 5) => {
+    if (timeout.current) 
+      clearTimeout(timeout.current)
+    
+    setError(msg)
+    // clear error
+    timeout.current = setTimeout(() => {
+      setError('')
+      clearTimeout(timeout.current)
+    }, seconds * 1000)
+  }, [])
+
   const onSubmit = useCallback(
-    async (data: Input) => {
+    async (data: FormInputs) => {
       try {
         const response = await bff.post("/api/auth", data);
         if (response) replace(response.data);
       } catch (error) {
         if (error instanceof AxiosError) {
-          setError(error.response?.data.message);
+          setErrorWithTimeout(error.response?.data.message);
+          return
         }
+
+        setErrorWithTimeout('Ocorreu um erro, tente novamente mais tarde')
       }
     },
-    [replace]
+    [replace, setErrorWithTimeout]
   );
 
   return (
-    <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-      <Flex p={8} flex={1} align={"center"} justify={"center"}>
-        <Stack spacing={4} w={"full"} maxW={"md"}>
-          <Heading fontWeight="bold" fontSize={"2xl"}>
-            Acesse sua conta {CONSTANTS.name_application}
+    <Stack
+      minH={"100vh"}
+      direction={{ base: "column", md: "row" }}
+      bg={theme.colors.gray[50]}
+    >      
+      <Flex
+        p={4}
+        flex={1}
+        align={"center"}
+        justify={"center"}
+        minW={`min(100%, ${theme.breakpoints.sm})`}
+        direction={"column"}
+      >        
+        <Stack
+          spacing={4}
+          padding={8}
+          w={`min(100%, ${theme.breakpoints.sm})`}
+          backgroundColor={`white`}
+          rounded={8}
+          shadow="md"
+        >
+          <Heading fontWeight="medium" fontSize={"2xl"}>
+            Acesso {CONSTANTS.name_application}
           </Heading>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl
-              isInvalid={!!errors.email?.message || !!error}
-              id="email"
-            >
-              <FormLabel>Email</FormLabel>
-              <Input
-                {...register("email", { required: true })}
-                isInvalid={!!errors.email?.message}
-              />
-              {!!error && <FormErrorMessage>{error}</FormErrorMessage>}
-            </FormControl>
+          <VStack
+            as="form"
+            onSubmit={handleSubmit(onSubmit)}
+            alignItems="stretch"
+            gap={4}
+          >
+            <Input<FormInputs>
+              register={register}
+              label="E-mail"
+              name="email"
+              isInvalid={Boolean(errors.email?.message)}
+              errorMessage={errors.email?.message}
+            />
 
-            <FormControl id="password">
-              <FormLabel>Senha</FormLabel>
-              <Input
-                {...register("password", { required: true })}
-                isInvalid={!!errors.password?.message}
-                type="password"
-              />
-            </FormControl>
+            <Input<FormInputs>
+              register={register}
+              label="Senha"
+              name="password"
+              type={"password"}
+              isInvalid={Boolean(errors.password?.message)}
+              errorMessage={errors.password?.message}
+            />
 
             <Stack spacing={6}>
-              <Stack
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-              >
-                <Checkbox>Lembrar-me</Checkbox>
-              </Stack>
-
               <Button
                 colorScheme={"blue"}
                 variant={"solid"}
                 type="submit"
-                isDisabled={!isValid}
+                isDisabled={!isValid || isSubmitting}
+                leftIcon={
+                  <RenderIf condition={isSubmitting}>
+                    <Spinner />
+                  </RenderIf>
+                }
+                shadow="md"
               >
-                Login
+                {(isSubmitting) ? 'Entrando...' : 'Entrar'}
               </Button>
+
+              <RenderIf condition={!!error}>
+                <ScaleFade in={!!error}>
+                  <Alert status="error" rounded={"md"} w="full" mb={2}>
+                    <AlertIcon />
+                    <AlertTitle>Oops!</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                </ScaleFade>
+              </RenderIf>
             </Stack>
-          </form>
+          </VStack>
         </Stack>
       </Flex>
+
       <Flex flex={1} display={{ base: "none", md: "none", lg: "flex" }}>
         <Image
           alt={"Login Image"}
           objectFit={"cover"}
-          src={
-            "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"
-          }
+          src="/login.png"
         />
       </Flex>
     </Stack>
@@ -130,7 +184,7 @@ export default function Entrar() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const auth = makeAuth();
+  const auth = AuthFactory.make();
   const account = await auth.getSessionFromContext(context).catch(() => null);
 
   if (auth.isAuth(account)) {

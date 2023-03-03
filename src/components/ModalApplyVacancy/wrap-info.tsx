@@ -21,7 +21,7 @@ const WrapInfo: React.FC = () => {
     },
   ];
   return (
-    <Flex gap={2} flexDir={{ base: "column", md: "row" }}>
+    <Flex gap={2} flexDir={"row"}>
       {items.map((item, key) => (
         <BoxInfo
           key={key}
@@ -66,14 +66,14 @@ const BoxInfo = ({ icon: Icon, label, description, index }: BoxInfoProps) => {
       animate={"visible"}
       bg={"white"}
       border="1px"
-      p={{ base: 1, md: 2, lg: 4 }}
+      p={{ base: 2, lg: 4 }}
       borderRadius={"md"}
       borderColor={useColorModeValue("gray.200", "gray.700")}
       flexDir={"row"}
       alignItems={"center"}
-      gap={4}
-      width={{ base: 250, md: 300 }}
-      height={100}
+      gap={{ base: 2, md: 4 }}
+      flex={1}
+      height={{ base: 'auto', md: `min(100px, auto)` }}
     >
       <Box
         border="1px"
@@ -84,7 +84,8 @@ const BoxInfo = ({ icon: Icon, label, description, index }: BoxInfoProps) => {
       >
         {Icon}
       </Box>
-      <Box>
+      
+      <Box style={{ margin: 0 }}>
         <Text fontWeight={"bold"}>{label}</Text>
         <Text fontSize={12} fontWeight={"normal"} color={"gray.500"}>
           {description}

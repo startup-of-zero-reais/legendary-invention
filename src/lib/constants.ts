@@ -1,6 +1,6 @@
 export const CONSTANTS = {
   get name_application() {
-    return "JOBITE";
+    return "Tech Talent Hub";
   },
 
   get description_application() {

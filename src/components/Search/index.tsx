@@ -29,16 +29,16 @@ const Search: React.FC = () => {
       as={"form"}
       onSubmit={handleSubmit}
       bg="white"
-      p={{ base: "2", md: "4", lg: "6" }}
+      p={{ base: "2", lg: "4" }}
       border="1px"
       borderColor={useColorModeValue("gray.200", "gray.700")}
-      borderRadius={{ base: "md", lg: "2xl" }}
+      borderRadius={{ base: "md", lg: "xl" }}
     >
       <Input
         onChange={onSearchClear}
         name="search"
         disabled={isLoading}
-        placeholder="Procurar vagas por título, empresa ou qualquer palavra chave..."
+        placeholder="Procurar vagas por título, empresa ou palavra chave..."
       />
       {isLoading ? (
         <IconButton

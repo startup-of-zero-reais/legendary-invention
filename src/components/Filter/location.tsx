@@ -7,10 +7,11 @@ const Location: React.FC = () => {
   const { updateLocation, state, isExpanded, locations } = useFilter();
 
   return (
-    <Stack mt={{ base: isExpanded ? 4 : 0 }}>
+    <Stack mt={{ base: isExpanded ? 6 : 0 }}>
       <Text fontWeight="semibold" fontSize="14">
         Localização
       </Text>
+      
       <HStack>
         <Select
           onChange={(e) => updateLocation(e.target.value)}

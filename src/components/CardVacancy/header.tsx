@@ -1,4 +1,4 @@
-import { Flex, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import { pt } from "date-fns/locale";
 import { motion, Variants } from "framer-motion";
@@ -38,14 +38,22 @@ const Header: React.FC<Props> = ({
       initial={"hidden"}
       animate={"visible"}
     >
-      <Image
-        src={logo}
-        alt="Logo da empresa"
-        width={60}
-        height={60}
-        loader={imgLoader}
-        style={{ objectFit: "cover" }}
-      />
+      <Box
+        width={20}
+        height={20}
+        position="relative"
+        rounded={{base: "sm", md: "md"}}
+        overflow="hidden"
+      >
+        <Image
+          src={logo}
+          alt="Logo da empresa"
+          loader={imgLoader}
+          style={{ objectFit: "cover" }}
+          fill
+        />
+      </Box>
+
       <Flex flexShrink={0} flexDirection="column" ml={{ base: "4" }}>
         <Stack
           alignItems={{ lg: "center" }}
@@ -66,7 +74,7 @@ const Header: React.FC<Props> = ({
 
         <HStack mt="2">
           <Text color="gray.300" fontSize="12" fontWeight="normal">
-            {`Salário: ${salary} - ${workModel}`}
+            {`Salário ${salary} - ${workModel}`}
           </Text>
         </HStack>
       </Flex>

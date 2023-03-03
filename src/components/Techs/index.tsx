@@ -1,4 +1,4 @@
-import { Badge, Flex, Text } from "@chakra-ui/react";
+import { Badge, Flex, Text, ThemeTypings } from "@chakra-ui/react";
 import React from "react";
 
 type Props = {
@@ -8,18 +8,13 @@ type Props = {
 const Techs: React.FC<Props> = ({ techs }) => {
   return (
     <Flex
-      flexDirection={{ base: "column", md: "row" }}
-      alignItems={{ base: "start", md: "center" }}
+      w="full"
+      flexDirection={"row"}
+      alignItems={"baseline"}
+      gap={2}
     >
       {techs.map((tech, key) => (
-        <Badge
-          p={{ base: 0, md: 1 }}
-          key={key}
-          _notFirst={{
-            marginLeft: { md: 3, base: 0 },
-            marginTop: { base: 2, md: 0 },
-          }}
-        >
+        <Badge py={0} px={1} key={key} colorScheme={getColor(tech)}>
           <Text fontWeight="medium" fontSize="12">
             {tech}
           </Text>
@@ -30,3 +25,36 @@ const Techs: React.FC<Props> = ({ techs }) => {
 };
 
 export default Techs;
+
+type AvailableTechs =
+ | 'Golang' 
+ | 'React' 
+ | 'Python'
+ | 'React Native' 
+ | 'Figma'
+ | 'PHP'
+ | 'Adobe XD'
+
+const colorScheme = new Map<AvailableTechs, ThemeTypings["colorSchemes"]>([
+  ['Golang', 'blue'],
+  ['React', 'cyan'],
+  ['Python', 'facebook'],
+  ['React Native', 'purple'],
+  ['Figma', 'red'],
+  ['PHP', 'purple'],
+  ['Adobe XD', 'pink'],
+])
+
+function getColor(tech: string) {
+  return colorScheme.get(tech as any) || randomColor()
+}
+
+function randomColor() {
+  const i = Math.floor(Math.random() * colorScheme.size)
+
+  let counter = 0;
+  for(const [_, color] of colorScheme) {
+    if (i == counter) return color;
+    counter++;
+  }
+}

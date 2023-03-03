@@ -1,6 +1,6 @@
 import { Company, JobModel } from "@/domain";
 import { formatDistance } from "date-fns";
-import { pt } from "date-fns/locale";
+import { ptBR } from "date-fns/locale";
 import { useRouter } from "next/router";
 import React, { useCallback, useMemo } from "react";
 
@@ -26,6 +26,7 @@ interface ApplyProviderContext {
   actionApply: () => void;
   close: () => void;
   isOpen: boolean;
+  location: string;
 }
 
 const ApplyContext = React.createContext<ApplyProviderContext>(
@@ -49,13 +50,14 @@ export function ApplyProvider({
     techs,
     createdAt,
     company,
+    location = 'Não encontrada',
   } = job;
 
   const dateFormated = useMemo(
     () =>
       formatDistance(new Date(createdAt), new Date(), {
         addSuffix: true,
-        locale: pt,
+        locale: ptBR,
       }),
     [createdAt]
   );
@@ -83,6 +85,7 @@ export function ApplyProvider({
         techs,
         isOpen,
         close,
+        location,
       }}
     >
       {children}
