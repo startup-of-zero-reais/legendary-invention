@@ -10,8 +10,8 @@ const Specialties: React.FC<Props> = ({ specialties }: Props) => {
   const { updateSpecialties, state } = useFilter();
 
   return (
-    <Stack mt="24px">
-      <Text fontWeight="semibold" fontSize="14" mb="4">
+    <Stack rowGap={2}>
+      <Text fontWeight="semibold" fontSize="14">
         Especialidades
       </Text>
 

@@ -51,6 +51,7 @@ function Filter() {
           animate={isExpanded ? "open" : "closed"}
           variants={variants}
           transition={{ type: "easeInOut" }}
+          rowGap={4}
         >
           <Location />
 

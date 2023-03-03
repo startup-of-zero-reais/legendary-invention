@@ -10,8 +10,8 @@ const Availability: React.FC<Props> = ({ availability }: Props) => {
   const { state, updateAvailability: updateWorkingModel } = useFilter();
 
   return (
-    <Stack mt="24px">
-      <Text fontWeight="semibold" fontSize="14" mb="4">
+    <Stack rowGap={2}>
+      <Text fontWeight="semibold" fontSize="14">
         Modelo de Trabalho
       </Text>
 
