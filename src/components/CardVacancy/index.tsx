@@ -1,4 +1,4 @@
-import { Flex, Stack, Text } from "@chakra-ui/react";
+import { Flex, Stack, Text, useTheme } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import React from "react";
@@ -14,6 +14,7 @@ type Props = {
 };
 
 const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
+  const theme = useTheme()
   const {
     id,
     createdAt,
@@ -48,12 +49,17 @@ const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
       scroll={false}
       href={`/?vaga=${id}`}
       flexDir={"column"}
-      bg="gray.50"
-      padding="5"
-      borderRadius={{ base: "sm", lg: "xl" }}
+      bgImg={`linear-gradient(0,
+        ${theme.colors.gray[50]}80,
+        ${theme.colors.gray[50]}60
+      )`}
+      padding={4}
+      borderRadius={{ base: "sm", lg: "lg" }}
       minHeight={260}
       border="1px"
-      borderColor={"gray.200"}
+      borderColor={"gray.100"}
+      _hover={{ shadow: "md" }}
+      transition="all 200ms ease-in-out"
     >
       <Header
         {...{

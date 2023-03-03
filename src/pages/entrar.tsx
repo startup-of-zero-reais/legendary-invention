@@ -116,7 +116,7 @@ export default function Entrar() {
           shadow="md"
         >
           <Heading fontWeight="medium" fontSize={"2xl"}>
-            Acesse sua conta {CONSTANTS.name_application}
+            Acesso {CONSTANTS.name_application}
           </Heading>
 
           <VStack
