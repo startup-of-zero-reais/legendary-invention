@@ -1,11 +1,12 @@
 import { Account, Candidate, LoadMe, Recruiter } from "@/domain";
 import { Nullable } from "@/lib/nullable";
-import { logout } from "@/pages/api/auth";
+import { logout } from "@/server-lib/api/auth";
 import { useRouter } from "next/router";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 interface AuthProviderProps {
+  isAuth: boolean;
   whoAmi: Nullable<LoadMe.Model>;
   profile: () => Profile;
   swapProfile: () => void;
@@ -80,6 +81,7 @@ export const AuthProvider = ({
   return (
     <AuthContext.Provider
       value={{
+        isAuth,
         whoAmi: account,
         profile,
         swapProfile,

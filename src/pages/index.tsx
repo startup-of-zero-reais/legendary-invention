@@ -15,11 +15,11 @@ import { FilterProvider } from "@/components/Filter/context";
 import { AuthProvider } from "../context/auth";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
 import { Filters } from "@/domain/models/filters";
-import { makeAuth } from "./api/auth";
+import { AuthFactory } from "@/server-lib/factory/auth";
 import { Nullable } from "@/lib/nullable";
-import { filters } from "./api/filters";
-import { getJob } from "./api/jobs";
-import { locations } from "./api/locations";
+import { filters } from "@/server-lib/api/filters";
+import { getJob } from "@/server-lib/api/jobs";
+import { getLocations } from "@/server-lib/api/locations";
 import { Location } from "@/domain/models/location";
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -30,7 +30,7 @@ type HomeProps = {
   canSwap: boolean;
   isAuth: boolean;
   _embedded: Filters.Embedded["_embedded"];
-  _embedded_location: Location[];
+  locations: Location[];
 };
 
 export default function Home({
@@ -38,7 +38,7 @@ export default function Home({
   isAuth,
   canSwap,
   _embedded,
-  _embedded_location,
+  locations,
   job,
 }: Props) {
   let {
@@ -64,7 +64,7 @@ export default function Home({
       <Header />
 
       <Container maxW="container.lg" minHeight="calc(100vh - 68px)">
-        <FilterProvider locations={_embedded_location} filters={_embedded}>
+        <FilterProvider locations={locations} filters={_embedded}>
           <Flex
             minH="100%"
             p={{ base: "2", md: "4", lg: "6" }}
@@ -97,22 +97,18 @@ export default function Home({
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context
 ) => {
-  const {
-    query: { vaga },
-  } = context;
+  const { query: { vaga } } = context;
 
   const vacancyId = vaga as string;
 
-  const auth = makeAuth();
+  const auth = AuthFactory.make();
 
-  const [account, { _embedded }, job, { _embedded: _embedded_location }] =
+  const [account, { _embedded }, job, locations] =
     await Promise.all([
-      await makeAuth()
-        .getSessionFromContext(context)
-        .catch(() => null),
-      await filters(),
-      vacancyId ? await getJob(vacancyId) : null,
-      await locations(),
+      auth.getSessionFromContext(context).catch(() => null),
+      filters(),
+      vacancyId ? getJob(vacancyId) : null,
+      getLocations(),
     ]);
 
   const isAuth = auth.isAuth(account);
@@ -125,7 +121,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
       isAuth,
       job,
       _embedded,
-      _embedded_location,
+      locations,
     },
   };
 };

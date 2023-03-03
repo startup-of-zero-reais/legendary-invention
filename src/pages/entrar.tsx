@@ -15,10 +15,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { bff } from "@/server-lib/services";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { AxiosError } from "axios";
 import { GetServerSideProps } from "next";
-import { makeAuth } from "./api/auth";
+import { AuthFactory } from "@/server-lib/factory/auth";
 import { useRouter } from "next/router";
 
 type Input = {
@@ -130,7 +130,7 @@ export default function Entrar() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const auth = makeAuth();
+  const auth = AuthFactory.make();
   const account = await auth.getSessionFromContext(context).catch(() => null);
 
   if (auth.isAuth(account)) {
