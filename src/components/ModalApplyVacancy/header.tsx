@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useApply } from "./context";
 
 const Header: React.FC = () => {
-  const { company, title, hourDistance } = useApply();
+  const { company, title, hourDistance , location} = useApply();
 
   const item = {
     hidden: {
@@ -43,7 +43,7 @@ const Header: React.FC = () => {
           <HiLocationMarker color={"gray"} />
 
           <Text color={"gray.300"} fontSize={12} fontWeight={"medium"}>
-            {`${company?.location || "Goiânia"} - ${hourDistance}`}
+            {`${location} - ${hourDistance}`}
           </Text>
         </HStack>
       </Stack>

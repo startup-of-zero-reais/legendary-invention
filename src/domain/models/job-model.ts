@@ -8,6 +8,7 @@ export type JobModel = {
   updatedAt: string;
   techs?: string[];
   workModel: string;
+  location: string;
 };
 
 export type Company = {
@@ -15,5 +16,4 @@ export type Company = {
   cnpj: string;
   logo: string;
   description: string;
-  location: string;
 };
