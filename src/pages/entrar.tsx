@@ -10,6 +10,7 @@ import {
   Input,
   Stack,
   Image,
+  Spinner,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,6 +21,7 @@ import { AxiosError } from "axios";
 import { GetServerSideProps } from "next";
 import { AuthFactory } from "@/server-lib/factory/auth";
 import { useRouter } from "next/router";
+import { RenderIf } from "@/components";
 
 type Input = {
   email: string;
@@ -41,7 +43,7 @@ export default function Entrar() {
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting },
   } = useForm<Input>({
     defaultValues: {
       email: "",
@@ -108,9 +110,14 @@ export default function Entrar() {
                 colorScheme={"blue"}
                 variant={"solid"}
                 type="submit"
-                isDisabled={!isValid}
+                isDisabled={!isValid || isSubmitting}
+                leftIcon={
+                  <RenderIf condition={isSubmitting}>
+                    <Spinner />
+                  </RenderIf>
+                }
               >
-                Login
+                {(isSubmitting) ? 'Entrando...' : 'Entrar'}
               </Button>
             </Stack>
           </form>
