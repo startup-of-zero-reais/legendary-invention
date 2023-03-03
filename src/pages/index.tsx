@@ -17,7 +17,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
 import { Filters } from "@/domain/models/filters";
 import { AuthFactory } from "@/server-lib/factory/auth";
 import { Nullable } from "@/lib/nullable";
-import { filters } from "@/server-lib/api/filters";
+import { getFilters } from "@/server-lib/api/filters";
 import { getJob } from "@/server-lib/api/jobs";
 import { getLocations } from "@/server-lib/api/locations";
 import { Location } from "@/domain/models/location";
@@ -29,7 +29,7 @@ type HomeProps = {
   job: Nullable<JobModel>;
   canSwap: boolean;
   isAuth: boolean;
-  _embedded: Filters.Embedded["_embedded"];
+  filters: Filters.Embedded["_embedded"];
   locations: Location[];
 };
 
@@ -37,7 +37,7 @@ export default function Home({
   account,
   isAuth,
   canSwap,
-  _embedded,
+  filters,
   locations,
   job,
 }: Props) {
@@ -64,7 +64,7 @@ export default function Home({
       <Header />
 
       <Container maxW="container.lg" minHeight="calc(100vh - 68px)">
-        <FilterProvider locations={locations} filters={_embedded}>
+        <FilterProvider locations={locations} filters={filters}>
           <Flex
             minH="100%"
             p={{ base: "2", md: "4", lg: "6" }}
@@ -103,11 +103,11 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
 
   const auth = AuthFactory.make();
 
-  const [account, { _embedded }, job, locations] =
+  const [account, { _embedded: filters }, job, locations] =
     await Promise.all([
       auth.getSessionFromContext(context).catch(() => null),
-      filters(),
-      vacancyId ? getJob(vacancyId) : null,
+      getFilters(),
+      getJob(vacancyId),
       getLocations(),
     ]);
 
@@ -120,7 +120,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
       canSwap,
       isAuth,
       job,
-      _embedded,
+      filters,
       locations,
     },
   };
