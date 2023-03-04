@@ -48,9 +48,8 @@ export default function WithSubnavigation() {
         >
           <IconButton
             onClick={onToggle}
-            icon={isOpen
-              ? <CloseIcon w={3} h={3} />
-              : <HamburgerIcon w={5} h={5} />
+            icon={
+              isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
             }
             variant={"ghost"}
             aria-label={"Toggle Navigation"}
@@ -59,8 +58,8 @@ export default function WithSubnavigation() {
 
         <Flex flex={1} justify={{ base: "center", md: "start" }}>
           <Image
-            src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-            alt="Workflow"
+            src="/logo.png"
+            alt="Logo Job Talent Hub"
             width={35}
             height={35}
           />
@@ -74,9 +73,9 @@ export default function WithSubnavigation() {
           <ShowMe />
         ) : (
           <Stack
-            flex={{ base: 1, md: 0 }}
             justify={"flex-end"}
             direction={"row"}
+            flexGrow={0}
             spacing={6}
           >
             <Button
@@ -95,7 +94,7 @@ export default function WithSubnavigation() {
               fontWeight={600}
               color={"white"}
               bg={"pink.400"}
-              href={"#"}
+              href={"/cadastro"}
               _hover={{
                 bg: "pink.300",
               }}
@@ -119,7 +118,7 @@ const DesktopNav = () => {
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
 
   return (
-    <Stack direction={"row"} spacing={4}>
+    <Stack alignItems={"center"} direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -276,8 +275,10 @@ interface NavItem {
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Procurar Vagas",
+    href: "/",
   },
   {
     label: "Minhas Vagas",
+    href: "/dashboard/minhas-vagas",
   },
 ];
