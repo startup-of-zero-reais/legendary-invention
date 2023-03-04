@@ -1,25 +1,19 @@
 import { CONSTANTS } from "@/lib/constants";
 import {
   Button,
-  Checkbox,
   Flex,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
   Heading,
-  Input as ChakraInput,
   Stack,
   Image,
   Spinner,
-  Spacer,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  FormHelperText,
   VStack,
   useTheme,
   ScaleFade,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -31,6 +25,8 @@ import { GetServerSideProps } from "next";
 import { AuthFactory } from "@/server-lib/factory/auth";
 import { useRouter } from "next/router";
 import { Input, RenderIf } from "@/components";
+import { useErrorWithTimeout } from "@/lib/set-error-with-timeout";
+import Link from "next/link";
 
 type FormInputs = {
   email: string;
@@ -39,19 +35,22 @@ type FormInputs = {
 
 const schema = yup
   .object({
-    email: yup.string()
-      .email('Forneça um e-mail válido')
-      .required('O campo e-mail é obrigatório'),
-    password: yup.string()
-      .min(6, 'O campo de senha deve conter no mínimo 6 caracteres')
-      .required('O campo de senha é obrigatório'),
+    email: yup
+      .string()
+      .email("Forneça um e-mail válido")
+      .required("O campo e-mail é obrigatório"),
+    password: yup
+      .string()
+      .min(6, "O campo de senha deve conter no mínimo 6 caracteres")
+      .required("O campo de senha é obrigatório"),
   })
   .required();
 
 export default function Entrar() {
   const { replace } = useRouter();
   const [error, setError] = useState("");
-  const theme = useTheme()
+  const setErrorWithTimeout = useErrorWithTimeout(setError);
+  const theme = useTheme();
 
   const {
     handleSubmit,
@@ -63,19 +62,6 @@ export default function Entrar() {
     mode: "onChange",
   });
 
-  const timeout = useRef<NodeJS.Timeout>(null!);
-  const setErrorWithTimeout = useCallback((msg: string, seconds = 5) => {
-    if (timeout.current) 
-      clearTimeout(timeout.current)
-    
-    setError(msg)
-    // clear error
-    timeout.current = setTimeout(() => {
-      setError('')
-      clearTimeout(timeout.current)
-    }, seconds * 1000)
-  }, [])
-
   const onSubmit = useCallback(
     async (data: FormInputs) => {
       try {
@@ -84,10 +70,10 @@ export default function Entrar() {
       } catch (error) {
         if (error instanceof AxiosError) {
           setErrorWithTimeout(error.response?.data.message);
-          return
+          return;
         }
 
-        setErrorWithTimeout('Ocorreu um erro, tente novamente mais tarde')
+        setErrorWithTimeout("Ocorreu um erro, tente novamente mais tarde");
       }
     },
     [replace, setErrorWithTimeout]
@@ -98,7 +84,7 @@ export default function Entrar() {
       minH={"100vh"}
       direction={{ base: "column", md: "row" }}
       bg={theme.colors.gray[50]}
-    >      
+    >
       <Flex
         p={4}
         flex={1}
@@ -106,7 +92,7 @@ export default function Entrar() {
         justify={"center"}
         minW={`min(100%, ${theme.breakpoints.sm})`}
         direction={"column"}
-      >        
+      >
         <Stack
           spacing={4}
           padding={8}
@@ -155,8 +141,12 @@ export default function Entrar() {
                 }
                 shadow="md"
               >
-                {(isSubmitting) ? 'Entrando...' : 'Entrar'}
+                {isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
+
+              <ChakraLink as={Link} href="/cadastro">
+                Ainda não possui uma conta? Cadastre-se
+              </ChakraLink>
 
               <RenderIf condition={!!error}>
                 <ScaleFade in={!!error}>
@@ -173,11 +163,7 @@ export default function Entrar() {
       </Flex>
 
       <Flex flex={1} display={{ base: "none", md: "none", lg: "flex" }}>
-        <Image
-          alt={"Login Image"}
-          objectFit={"cover"}
-          src="/login.png"
-        />
+        <Image alt={"Login Image"} objectFit={"cover"} src="/login.png" />
       </Flex>
     </Stack>
   );
