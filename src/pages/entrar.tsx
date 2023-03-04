@@ -24,7 +24,7 @@ import { AxiosError } from "axios";
 import { GetServerSideProps } from "next";
 import { AuthFactory } from "@/server-lib/factory/auth";
 import { useRouter } from "next/router";
-import { Input, RenderIf } from "@/components";
+import { Input, RenderIf, ErrorMessage } from "@/components";
 import { useErrorWithTimeout } from "@/lib/set-error-with-timeout";
 import Link from "next/link";
 
@@ -148,15 +148,7 @@ export default function Entrar() {
                 Ainda não possui uma conta? Cadastre-se
               </ChakraLink>
 
-              <RenderIf condition={!!error}>
-                <ScaleFade in={!!error}>
-                  <Alert status="error" rounded={"md"} w="full" mb={2}>
-                    <AlertIcon />
-                    <AlertTitle>Oops!</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                </ScaleFade>
-              </RenderIf>
+              <ErrorMessage error={error} />
             </Stack>
           </VStack>
         </Stack>
