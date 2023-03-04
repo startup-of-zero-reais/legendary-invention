@@ -1,4 +1,5 @@
 import { Company, JobModel } from "@/domain";
+import { bff } from "@/server-lib/services";
 import { formatDistance } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useRouter } from "next/router";
@@ -50,7 +51,7 @@ export function ApplyProvider({
     techs,
     createdAt,
     company,
-    location = 'Não encontrada',
+    location = "Não encontrada",
   } = job;
 
   const dateFormated = useMemo(
@@ -67,8 +68,13 @@ export function ApplyProvider({
     onClose();
   }, [onClose, router]);
 
-  const actionApply = useCallback(() => {
-    close();
+  const actionApply = useCallback(async () => {
+    try {
+      await bff.post("/api/apply");
+      close();
+    } catch (error) {
+      console.log(error);
+    }
   }, [close]);
 
   return (
