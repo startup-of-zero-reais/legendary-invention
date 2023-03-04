@@ -1,4 +1,4 @@
-import { Input, RenderIf } from "@/components";
+import { ErrorMessage, Input, RenderIf } from "@/components";
 import { useErrorWithTimeout } from "@/lib/set-error-with-timeout";
 import { bff } from "@/server-lib/services";
 import {
@@ -203,15 +203,7 @@ const RecruiterForm: NextComponentType = () => {
             Já possui uma conta? Acesse
           </ChakraLink>
 
-          <RenderIf condition={!!error}>
-            <ScaleFade in={!!error}>
-              <Alert status="error" rounded={"md"} w="full" mb={2}>
-                <AlertIcon />
-                <AlertTitle>Oops!</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            </ScaleFade>
-          </RenderIf>
+          <ErrorMessage error={error} />
         </Stack>
       </Stack>
     </TabPanel>

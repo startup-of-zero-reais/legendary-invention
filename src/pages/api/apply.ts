@@ -7,8 +7,10 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method && req.method.toUpperCase() === "POST") {
+    const { jobId } = req.body;
+
     try {
-      const response = await apply();
+      const response = await apply(jobId);
 
       return res.status(200).send(response);
     } catch (error) {
