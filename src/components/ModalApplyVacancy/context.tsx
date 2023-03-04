@@ -1,9 +1,11 @@
 import { Company, JobModel } from "@/domain";
+import { useErrorWithTimeout } from "@/lib/set-error-with-timeout";
 import { bff } from "@/server-lib/services";
+import { AxiosError } from "axios";
 import { formatDistance } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useRouter } from "next/router";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 interface WithChildrenProps {
   children: React.ReactNode;
@@ -28,6 +30,7 @@ interface ApplyProviderContext {
   close: () => void;
   isOpen: boolean;
   location: string;
+  error: string;
 }
 
 const ApplyContext = React.createContext<ApplyProviderContext>(
@@ -41,6 +44,10 @@ export function ApplyProvider({
   onClose,
 }: ApplyProviderProps) {
   const router = useRouter();
+
+  const [error, setError] = useState("");
+
+  const setErrorWithTimeout = useErrorWithTimeout(setError);
 
   const {
     description,
@@ -70,12 +77,18 @@ export function ApplyProvider({
 
   const actionApply = useCallback(async () => {
     try {
-      await bff.post("/api/apply");
+      await bff.post("/api/apply", {
+        jobId: job.id,
+      });
       close();
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        setErrorWithTimeout(error.response?.data.message);
+        return;
+      }
+      setErrorWithTimeout("Ocorreu um erro, tente novamente mais tarde");
     }
-  }, [close]);
+  }, [close, job.id, setErrorWithTimeout]);
 
   return (
     <ApplyContext.Provider
@@ -91,6 +104,7 @@ export function ApplyProvider({
         techs,
         isOpen,
         close,
+        error,
         location,
       }}
     >
