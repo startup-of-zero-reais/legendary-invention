@@ -42,7 +42,9 @@ export default function Home({
   locations,
   job,
 }: Props) {
-  let { query: { vaga } } = useRouter();
+  let {
+    query: { vaga },
+  } = useRouter();
   const vacancyId = vaga?.toString();
 
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -78,15 +80,15 @@ export default function Home({
               w="full"
             >
               <Search />
-              
+
               <WrapListVacancies />
-              
+
               <RenderIf condition={!!job && !!vacancyId}>
                 <ModalApplyVacancy
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    job={job!}
-                  />
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  job={job!}
+                />
               </RenderIf>
             </Flex>
           </Flex>
@@ -99,19 +101,20 @@ export default function Home({
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context
 ) => {
-  const { query: { vaga } } = context;
+  const {
+    query: { vaga },
+  } = context;
 
   const vacancyId = vaga as string;
 
   const auth = AuthFactory.make();
 
-  const [account, { _embedded: filters }, job, locations] =
-    await Promise.all([
-      auth.getSessionFromContext(context).catch(() => null),
-      getFilters(),
-      getJob(vacancyId),
-      getLocations(),
-    ]);
+  const [account, { _embedded: filters }, job, locations] = await Promise.all([
+    auth.getSessionFromContext(context).catch(() => null),
+    getFilters(),
+    getJob(vacancyId),
+    getLocations(),
+  ]);
 
   const isAuth = auth.isAuth(account);
   const canSwap = auth.canSwap(account);
