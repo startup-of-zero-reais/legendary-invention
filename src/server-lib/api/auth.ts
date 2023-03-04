@@ -1,5 +1,9 @@
-import { Authentication, LoadMe, RegisterCandidate } from "@/domain";
-import { RegisterRecruiter } from "@/domain/usecases/register-recruiter";
+import {
+  Authentication,
+  LoadMe,
+  RegisterCandidate,
+  RegisterRecruiter,
+} from "@/domain";
 import { request } from "@/server-lib/services";
 
 export const auth = async (auth?: Authentication.Params) => {
