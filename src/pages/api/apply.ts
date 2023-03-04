@@ -10,7 +10,10 @@ export default async function handler(
     const { jobId } = req.body;
 
     try {
-      const response = await apply(jobId);
+      const response = await apply(
+        jobId,
+        req.cookies[process.env.SESSION_KEY!]
+      );
 
       return res.status(200).send(response);
     } catch (error) {
