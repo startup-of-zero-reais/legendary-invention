@@ -10,6 +10,7 @@ import Header from "./header";
 import Body from "./body";
 import { ApplyProvider, useApply } from "./context";
 import { JobModel } from "@/domain";
+import ErrorApply from "./error-apply";
 
 const ModalApplyVacancy: React.FC = () => {
   const btnRef = React.useRef(null);
@@ -29,6 +30,8 @@ const ModalApplyVacancy: React.FC = () => {
         <DrawerCloseButton zIndex={10} />
         <Header />
         <Body />
+        <ErrorApply />
+
         <Footer />
       </DrawerContent>
     </Drawer>
