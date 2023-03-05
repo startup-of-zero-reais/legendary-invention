@@ -4,15 +4,8 @@ import { GetServerSidePropsContext } from "next";
 import { request } from "@/server-lib/services";
 
 export class Auth {
-  async getSessionFromContext(context: GetServerSidePropsContext) {
-    if (!process.env.SESSION_KEY) {
-      console.error(`missing environment SESSION_KEY.`)
-    }
-
-    const session = context.req.cookies[process.env.SESSION_KEY!];
-    const response = await request.get<Account>(`/auth/me`, {
-      headers: { Authorization: "Bearer " + session },
-    });
+  async getSession() {
+    const response = await request.get<Account>(`/auth/me`);
     return response.data;
   }
 
@@ -24,5 +17,41 @@ export class Auth {
   isAuth(account: Nullable<Account>): boolean {
     if (!account) return false;
     return Boolean(account.candidate || account.recruiter);
+  }
+
+  getAuthToken(context: GetServerSidePropsContext) {
+    if (!process.env.SESSION_KEY) {
+      console.error(`missing environment SESSION_KEY.`)
+    }
+
+    const session = context.req.cookies[process.env.SESSION_KEY!];
+
+    return new Token(session);
+  }
+}
+
+class Token {
+  constructor(private readonly token?: string) {}
+
+  toString() {
+    return this.token;
+  }
+
+  toBearer() {
+    if (!this.token) {
+      console.error('can not parse toBearer empty token')
+      return ''
+    };
+
+    return `Bearer ${this.toString()}`
+  }
+
+  toAuthorization() {
+    if (!this.token) {
+      console.error('can not parse toAuthorization empty token')
+      return {}
+    };
+
+    return { Authorization: this.toBearer() }
   }
 }

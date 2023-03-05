@@ -1,28 +1,37 @@
-import { Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Portal, Stack, Text, useTheme } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import { pt } from "date-fns/locale";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { imgLoader } from "@/lib/image-loader";
+import { RenderIf } from "../helpers/render-if";
+import { BsFillBookmarkCheckFill } from "react-icons/bs";
+import Link from "next/link";
 
 type Props = {
+  id: string;
   logo: string;
   item: Variants;
   salary: string;
   workModel: string;
   title: string;
   createdAt: string;
+  isApplied: boolean;
 };
 
 const Header: React.FC<Props> = ({
+  id,
   item,
   logo,
   salary,
   workModel,
   title,
   createdAt,
+  isApplied = false,
 }) => {
+  const { colors } = useTheme();
+
   const dateFormated = useMemo(
     () =>
       formatDistance(new Date(createdAt), new Date(), {
@@ -31,12 +40,14 @@ const Header: React.FC<Props> = ({
       }),
     [createdAt]
   );
+  
   return (
     <Flex
       as={motion.div}
       variants={item}
       initial={"hidden"}
       animate={"visible"}
+      width="full"
     >
       <Box
         width={20}
@@ -44,6 +55,9 @@ const Header: React.FC<Props> = ({
         position="relative"
         rounded={{base: "sm", md: "md"}}
         overflow="hidden"
+        as={Link}
+        scroll={false}
+        href={`/?vaga=${id}`}
       >
         <Image
           src={logo}
@@ -54,14 +68,51 @@ const Header: React.FC<Props> = ({
         />
       </Box>
 
-      <Flex flexShrink={0} flexDirection="column" ml={{ base: "4" }}>
+      <Flex flexShrink={0} grow={1} flexDirection="column" ml={{ base: "4" }}>
         <Stack
           alignItems={{ lg: "center" }}
           direction={{ base: "column", lg: "row" }}
         >
-          <Text fontWeight="medium" _after={{ lg: { content: `" •"` } }}>
-            {title}
-          </Text>
+          <Flex align={"center"} gap={2} justify="space-between" flex={1}>
+            <Text
+              fontWeight="medium"
+              _after={{ lg: { content: `" •"` } }}
+              as={Link}
+              scroll={false}
+              href={`/?vaga=${id}`}
+            >
+              {title}
+            </Text>
+
+            <RenderIf condition={isApplied}>
+              <Popover isLazy trigger="hover">
+                <PopoverTrigger>
+                  <Button
+                    p={2}
+                    border="1px solid"
+                    rounded="md"
+                    borderColor={colors.green[200]}
+                    variant={"ghost"}
+                  >
+                    <BsFillBookmarkCheckFill color={colors.green[500]} />
+                  </Button>
+                </PopoverTrigger>
+                
+                <Portal>
+                  <PopoverContent>
+                    <PopoverArrow />
+                    <PopoverBody bg={"white"}>
+                      <Text fontSize={"sm"}>
+                        Você já aplicou para esta vaga.
+                        Fique tranquilo, em breve vai acontecer alguma coisa
+                      </Text>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Portal>
+              </Popover>
+            </RenderIf>
+          </Flex>
+          
           <Text
             marginLeft="4"
             fontWeight="normal"
@@ -73,7 +124,11 @@ const Header: React.FC<Props> = ({
         </Stack>
 
         <HStack mt="2">
-          <Text color="gray.300" fontSize="12" fontWeight="normal">
+          <Text color="gray.300" fontSize="12" fontWeight="normal"
+            as={Link}
+            scroll={false}
+            href={`/?vaga=${id}`}
+          >
             {`Salário ${salary} - ${workModel}`}
           </Text>
         </HStack>

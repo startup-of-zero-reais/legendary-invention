@@ -22,6 +22,8 @@ import { getFilters } from "@/server-lib/api/filters";
 import { getJob } from "@/server-lib/api/jobs";
 import { getLocations } from "@/server-lib/api/locations";
 import { Location } from "@/domain/models/location";
+import { getAppliedJobs } from "@/server-lib/api/apply";
+import { request } from "@/server-lib/services";
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -32,6 +34,7 @@ type HomeProps = {
   isAuth: boolean;
   filters: Filters.Embedded["_embedded"];
   locations: Location[];
+  appliedJobs: string[];
 };
 
 export default function Home({
@@ -41,6 +44,7 @@ export default function Home({
   filters,
   locations,
   job,
+  appliedJobs,
 }: Props) {
   let {
     query: { vaga },
@@ -65,7 +69,11 @@ export default function Home({
       <Header />
 
       <Container maxW="container.lg" minHeight="calc(100vh - 68px)">
-        <FilterProvider locations={locations} filters={filters}>
+        <FilterProvider
+          locations={locations}
+          filters={filters}
+          appliedJobs={appliedJobs}
+        >
           <Flex
             minH="100%"
             p={{ base: "2", md: "4", lg: "6" }}
@@ -109,15 +117,28 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
 
   const auth = AuthFactory.make();
 
-  const [account, { _embedded: filters }, job, locations] = await Promise.all([
-    auth.getSessionFromContext(context).catch(() => null),
+  request.defaults.headers.common.Authorization = auth
+    .getAuthToken(context)
+    .toBearer()
+
+  const [
+    account,
+    { _embedded: filters },
+    job,
+    locations,
+    appliedJobsResult,
+  ] = await Promise.all([
+    auth.getSession().catch(() => null),
     getFilters(),
     getJob(vacancyId),
     getLocations(),
+    getAppliedJobs(),
   ]);
 
   const isAuth = auth.isAuth(account);
   const canSwap = auth.canSwap(account);
+
+  const appliedJobs = appliedJobsResult.data.map(data => data.job.id)
 
   return {
     props: {
@@ -127,6 +148,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
       job,
       filters,
       locations,
+      appliedJobs,
     },
   };
 };

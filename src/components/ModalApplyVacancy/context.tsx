@@ -78,7 +78,7 @@ export function ApplyProvider({
   const actionApply = useCallback(async () => {
     try {
       await bff.post("/api/apply", {
-        jobId: job.id,
+        jobId: id,
       });
       close();
     } catch (error) {
@@ -88,7 +88,7 @@ export function ApplyProvider({
       }
       setErrorWithTimeout("Ocorreu um erro, tente novamente mais tarde");
     }
-  }, [close, job.id, setErrorWithTimeout]);
+  }, [close, id, setErrorWithTimeout]);
 
   return (
     <ApplyContext.Provider

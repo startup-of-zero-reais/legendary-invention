@@ -3,7 +3,7 @@ import { Filters } from "@/domain/models/filters";
 import { Location } from "@/domain/models/location";
 import { getJobs } from "@/server-lib/api/jobs";
 import { useMediaQuery } from "@chakra-ui/react";
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
 import { useQuery } from "react-query";
 import {
   resetState,
@@ -20,6 +20,7 @@ import { Salary, State } from "./types";
 interface FilterContextProps {
   filters: Filters.Embedded["_embedded"];
   locations: Location[];
+  appliedJobs: string[];
 }
 
 interface WithChildrenProps extends FilterContextProps {
@@ -35,6 +36,7 @@ interface FilterProviderProps {
   updateClearAll: (clearAll: boolean) => void;
   updateExpanded: (expanded: boolean) => void;
   updateSearch: (search: string) => void;
+  alreadyApplied: (jobID: string) => boolean;
   locations: Location[];
   filters: Filters.Embedded["_embedded"];
   jobs: LoadAllJob.Model;
@@ -66,6 +68,7 @@ export function FilterProvider({
   children,
   filters,
   locations,
+  appliedJobs,
 }: WithChildrenProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [clearAll, setClearAll] = useState(false);
@@ -106,6 +109,10 @@ export function FilterProvider({
 
   const updateExpanded = (expanded: boolean) => setExpanded(expanded);
 
+  const alreadyApplied = useCallback((jobID: string) => {
+    return Boolean(appliedJobs.find(id => id === jobID))
+  }, [appliedJobs])
+
   useEffect(() => {
     if (!clearAll) return;
     dispatch(resetState());
@@ -140,6 +147,7 @@ export function FilterProvider({
         jobs: data as LoadAllJob.Model,
         isLoading,
         locations,
+        alreadyApplied,
       }}
     >
       {children}

@@ -1,11 +1,12 @@
 import { Flex, Stack, Text, useTheme } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import React from "react";
+import React, { useMemo } from "react";
 import Header from "./header";
 import SkeletonCardVacancy from "./skeleton";
 import { Techs } from "@/components";
 import { JobModel } from "@/domain";
+import { useFilter } from "../Filter/context";
 
 type Props = {
   index: number;
@@ -15,6 +16,8 @@ type Props = {
 
 const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
   const theme = useTheme()
+  const { alreadyApplied } = useFilter()
+
   const {
     id,
     createdAt,
@@ -41,13 +44,12 @@ const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
     },
   };
 
+  const isApplied = useMemo(() => alreadyApplied(id), [alreadyApplied, id])
+
   return isLoading ? (
     <SkeletonCardVacancy />
   ) : (
     <Flex
-      as={Link}
-      scroll={false}
-      href={`/?vaga=${id}`}
       flexDir={"column"}
       bgImg={`linear-gradient(0,
         ${theme.colors.gray[50]}80,
@@ -63,14 +65,17 @@ const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
     >
       <Header
         {...{
+          id,
           createdAt,
           salary,
           title,
           workModel,
           item,
           logo: company?.logo || "",
+          isApplied,
         }}
       />
+      
       <Stack
         as={motion.div}
         variants={item}
@@ -79,7 +84,14 @@ const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
         mt="4"
         flex={1}
       >
-        <Text fontWeight="normal" fontSize="12" flex={1}>
+        <Text
+          fontWeight="normal"
+          fontSize="12"
+          flex={1}
+          as={Link}
+          scroll={false}
+          href={`/?vaga=${id}`}
+        >
           {description}
         </Text>
 
@@ -89,4 +101,4 @@ const CardVacancy: React.FC<Props> = ({ index = 0, isLoading, job }) => {
   );
 };
 
-export default CardVacancy;
+export default React.memo(CardVacancy);

@@ -10,19 +10,19 @@ export default async function handler(
     const { jobId } = req.body as { jobId: string };
 
     try {
-      const response = await apply(
+      await apply(
         { jobId },
         req.cookies[process.env.SESSION_KEY!]
       );
 
-      return res.status(200).send(response);
+      return res.status(201).send(null);
     } catch (error) {
       const errorMessage: Record<number, string> = {
         400: "Você já aplicou para essa vaga.",
         0: "Ocorreu um problema tente novamente mais tarde",
       };
 
-      if (error instanceof AxiosError) {
+      if (error instanceof AxiosError) {        
         return res
           .status(error.response?.status || HttpStatusCode.InternalServerError)
           .json({ message: errorMessage[error.response?.status || 0] });
