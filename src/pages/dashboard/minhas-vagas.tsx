@@ -1,4 +1,4 @@
-import { CardVacancy, Header, RenderIf } from "@/components";
+import { Header, RenderIf } from "@/components";
 import { AuthProvider } from "@/context/auth";
 import { Account, LoadAppliedJobs } from "@/domain";
 import { CONSTANTS } from "@/lib/constants";
@@ -6,7 +6,7 @@ import { Nullable } from "@/lib/nullable";
 import { getAppliedJobs } from "@/server-lib/api/apply";
 import { AuthFactory } from "@/server-lib/factory/auth";
 import { request } from "@/server-lib/services";
-import { Portal, Stack, useDisclosure } from "@chakra-ui/react";
+import { Stack, useDisclosure } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
