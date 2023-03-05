@@ -6,8 +6,14 @@ import {
   InputProps as ChakraInputProps,
   FormHelperText,
   ScaleFade,
+  InputGroup,
+  InputRightElement,
+  IconButton,
 } from "@chakra-ui/react";
+import { FiEye, FiEyeOff } from 'react-icons/fi'
+import { useCallback, useState } from "react";
 import { Path, UseFormRegister } from "react-hook-form";
+import { RenderIf } from "../helpers/render-if";
 
 type FV = { [k: string]: any };
 
@@ -28,19 +34,39 @@ function Input<FormValues extends FV>(props: InputProps<FormValues>) {
     errorMessage = "",
     register,
     helperMessages = [],
+    type = 'text',
     ...rest
   } = props;
+
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = useCallback(() => setIsVisible(!isVisible), [isVisible])
 
   return (
     <FormControl isInvalid={isInvalid} id={name}>
       <FormLabel>{label}</FormLabel>
-      <ChakraInput
-        {...rest}
-        {...register(name)}
-        isInvalid={isInvalid}
-        autoComplete="off"
-        background={"#fefefe"}
-      />
+      <InputGroup>
+        <ChakraInput
+          {...rest}
+          {...register(name)}
+          isInvalid={isInvalid}
+          autoComplete="off"
+          type={isVisible ? 'text' : type}
+          background={"#fefefe"}
+        />
+
+        <RenderIf condition={type === 'password'}>
+          <InputRightElement>
+            <IconButton
+              onClick={toggleVisibility}
+              aria-label="visualizar password"
+              icon={isVisible
+                ? <FiEyeOff />
+                : <FiEye />
+              }
+            />
+          </InputRightElement>
+        </RenderIf>
+      </InputGroup>
 
       <ScaleFade in={isInvalid}>
         <FormErrorMessage>{errorMessage}</FormErrorMessage>
