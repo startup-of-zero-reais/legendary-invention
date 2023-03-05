@@ -7,11 +7,11 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method && req.method.toUpperCase() === "POST") {
-    const { jobId } = req.body;
+    const { jobId } = req.body as { jobId: string };
 
     try {
       const response = await apply(
-        jobId,
+        { jobId },
         req.cookies[process.env.SESSION_KEY!]
       );
 

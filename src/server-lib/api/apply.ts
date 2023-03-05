@@ -8,6 +8,9 @@ export const apply = async (
   return await request.post(
     "/apply",
     { jobID: param.jobId },
-    { headers: { Authorization: "Bearer " + sessionToken } }
+    { headers: {
+      Authorization: "Bearer " + sessionToken,
+      "Content-Type": "application/json"
+    } }
   );
 };
