@@ -128,7 +128,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
     locations,
     appliedJobsResult,
   ] = await Promise.all([
-    auth.getSession().catch(() => null),
+    auth.getSession(),
     getFilters(),
     getJob(vacancyId),
     getLocations(),

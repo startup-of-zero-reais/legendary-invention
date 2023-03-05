@@ -7,7 +7,7 @@ import {
   Stack,
   Collapse,
   Icon,
-  Link,
+  Link as ChakraLink,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -20,6 +20,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+import Link from 'next/link'
 import Image from "next/image";
 import { useAuth } from "@/context/auth";
 import ShowMe from "./show-me";
@@ -123,7 +124,8 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <PopoverTrigger>
-              <Link
+              <ChakraLink
+                as={Link}
                 p={2}
                 href={navItem.href ?? "#"}
                 fontSize={"sm"}
@@ -135,7 +137,7 @@ const DesktopNav = () => {
                 }}
               >
                 {navItem.label}
-              </Link>
+              </ChakraLink>
             </PopoverTrigger>
 
             {navItem.children && (
@@ -163,7 +165,8 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
-    <Link
+    <ChakraLink
+      as={Link}
       href={href}
       role={"group"}
       display={"block"}
@@ -194,7 +197,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           <Icon color={"pink.400"} w={5} h={5} as={ChevronRightIcon} />
         </Flex>
       </Stack>
-    </Link>
+    </ChakraLink>
   );
 };
 
@@ -255,9 +258,9 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         >
           {children &&
             children.map((child) => (
-              <Link key={child.label} py={2} href={child.href}>
+              <ChakraLink as={Link} key={child.label} py={2} href={child.href}>
                 {child.label}
-              </Link>
+              </ChakraLink>
             ))}
         </Stack>
       </Collapse>

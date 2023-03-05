@@ -5,7 +5,8 @@ import { request } from "@/server-lib/services";
 
 export class Auth {
   async getSession() {
-    const response = await request.get<Account>(`/auth/me`);
+    const response = await request.get<Account>(`/auth/me`)
+      .catch(() => ({ data: null }));
     return response.data;
   }
 

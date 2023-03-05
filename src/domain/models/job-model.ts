@@ -9,6 +9,7 @@ export type JobModel = {
   techs?: string[];
   workModel: string;
   location: string;
+  availability: string;
 };
 
 export type Company = {
