@@ -115,6 +115,7 @@ export default function Entrar() {
               register={register}
               label="E-mail"
               name="email"
+              placeholder={"Digite seu e-mail"}
               isInvalid={Boolean(errors.email?.message)}
               errorMessage={errors.email?.message}
             />
@@ -124,6 +125,7 @@ export default function Entrar() {
               label="Senha"
               name="password"
               type={"password"}
+              placeholder={"Su4_s3nh@Super-secREta"}
               isInvalid={Boolean(errors.password?.message)}
               errorMessage={errors.password?.message}
             />
