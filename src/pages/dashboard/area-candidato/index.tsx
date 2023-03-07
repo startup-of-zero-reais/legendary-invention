@@ -1,34 +1,30 @@
 import { Header, RenderIf } from "@/components";
-import { AuthProvider } from "@/context/auth";
-import { Account, LoadAppliedJobs } from "@/domain";
+import { AuthProvider, AuthProviderProps } from "@/context/auth";
+import { LoadAppliedJobs } from "@/domain";
 import { CONSTANTS } from "@/lib/constants";
-import { Nullable } from "@/lib/nullable";
 import { getAppliedJobs } from "@/server-lib/api/apply";
 import { AuthFactory } from "@/server-lib/factory/auth";
-import { request } from "@/server-lib/services";
-import { Stack, useDisclosure } from "@chakra-ui/react";
+import { useDisclosure, Stack } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
-import dynamic from "next/dynamic";
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { Suspense, useCallback, useEffect } from "react";
+import { useEffect, useCallback, Suspense } from "react";
 
-const LazyJobCard = dynamic(() => import("./components/job-card"), {
+const LazyJobCard = dynamic(() => import("../components/job-card"), {
   ssr: true,
 });
 
-const LazyJobDrawer = dynamic(() => import("./components/job-drawer"), {
+const LazyJobDrawer = dynamic(() => import("../components/job-drawer"), {
   ssr: true,
 });
 
-interface MyJobsProps {
-  isAuth: boolean;
-  canSwap: boolean;
-  account: Nullable<Account>;
+interface CandidateAreaProps {
+  authProps: AuthProviderProps;
   jobs: LoadAppliedJobs.JobModel[];
 }
 
-const MyJobs = ({ account, isAuth, canSwap, jobs }: MyJobsProps) => {
+const CandidateArea = ({ authProps, jobs }: CandidateAreaProps) => {
   const {
     query: { vaga },
     back,
@@ -49,7 +45,7 @@ const MyJobs = ({ account, isAuth, canSwap, jobs }: MyJobsProps) => {
   }, [back, onClose, jobID]);
 
   return (
-    <AuthProvider {...{ canSwap, isAuth, account }}>
+    <AuthProvider {...authProps}>
       <Head>
         <title>{CONSTANTS.name_application}</title>
         <meta name="description" content={CONSTANTS.description_application} />
@@ -79,23 +75,19 @@ const MyJobs = ({ account, isAuth, canSwap, jobs }: MyJobsProps) => {
   );
 };
 
-export default MyJobs;
+export default CandidateArea;
 
-export const getServerSideProps: GetServerSideProps<MyJobsProps> = async (
-  context
-) => {
+export const getServerSideProps: GetServerSideProps<
+  CandidateAreaProps
+> = async (context) => {
   const auth = AuthFactory.make();
 
-  request.defaults.headers.common.Authorization = auth
-    .getAuthToken(context)
-    .toBearer();
-
-  const [account, myJobs] = await Promise.all([
-    auth.getSession(),
+  const [authProps, myJobs] = await Promise.all([
+    auth.authProps(context),
     getAppliedJobs(),
   ]);
 
-  const isAuth = auth.isAuth(account);
+  const { isAuth, navigateAs } = authProps;
 
   if (!isAuth) {
     return {
@@ -106,7 +98,14 @@ export const getServerSideProps: GetServerSideProps<MyJobsProps> = async (
     };
   }
 
-  const canSwap = auth.canSwap(account);
+  if (navigateAs === "recruiter") {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/dashboard/minhas-vagas",
+      },
+    };
+  }
 
   const jobs: LoadAppliedJobs.JobModel[] = [];
   for (const job of myJobs.data) {
@@ -115,10 +114,8 @@ export const getServerSideProps: GetServerSideProps<MyJobsProps> = async (
 
   return {
     props: {
+      authProps,
       jobs,
-      account,
-      isAuth,
-      canSwap,
     },
   };
 };

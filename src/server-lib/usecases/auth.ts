@@ -2,6 +2,7 @@ import { Account } from "@/domain";
 import { Nullable } from "@/lib/nullable";
 import { GetServerSidePropsContext } from "next";
 import { request } from "@/server-lib/services";
+import { AuthProviderProps, ProfileKey } from "@/context/auth";
 
 export class Auth {
   async getSession() {
@@ -28,6 +29,29 @@ export class Auth {
     const session = context.req.cookies[process.env.SESSION_KEY!];
 
     return new Token(session);
+  }
+
+  activeProfile(context: GetServerSidePropsContext): Nullable<ProfileKey> {
+    const activeProfile = context.req.cookies['navigateas'];
+
+    if (!activeProfile) return null
+
+    return activeProfile as ProfileKey
+  }
+
+  async authProps(context: GetServerSidePropsContext): Promise<AuthProviderProps> {
+    request.defaults.headers.common.Authorization = this
+        .getAuthToken(context)
+        .toBearer();
+
+    const account = await this.getSession();
+    
+    return {
+      account,
+      canSwap: this.canSwap(account),
+      isAuth: this.isAuth(account),
+      navigateAs: this.activeProfile(context)
+    }
   }
 }
 

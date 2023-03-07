@@ -3,9 +3,9 @@ import { Nullable } from "@/lib/nullable";
 import { logout } from "@/server-lib/api/auth";
 import { useRouter } from "next/router";
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 
-interface AuthProviderProps {
+interface AuthContextModel {
   isAuth: boolean;
   whoAmi: Nullable<LoadMe.Model>;
   profile: () => Profile;
@@ -15,25 +15,30 @@ interface AuthProviderProps {
   logout?: () => void;
 }
 
-const AuthContext = React.createContext<AuthProviderProps>(
-  {} as AuthProviderProps
+const AuthContext = React.createContext<AuthContextModel>(
+  {} as AuthContextModel
 );
 
-interface WithChildrenProps {
-  children: React.ReactNode;
+export interface AuthProviderProps {
   account: Nullable<Account>;
   canSwap: boolean;
   isAuth: boolean;
+  navigateAs: Nullable<ProfileKey>;
+}
+
+interface WithChildrenProps extends AuthProviderProps {
+  children: React.ReactNode;  
 }
 
 type Profile = Candidate | Recruiter | undefined;
-type ProfileKey = "candidate" | "recruiter" | "unknown";
+export type ProfileKey = "candidate" | "recruiter" | "unknown";
 
 export const AuthProvider = ({
   children,
   canSwap,
   isAuth,
   account,
+  navigateAs
 }: WithChildrenProps) => {
   const router = useRouter();
 
@@ -44,14 +49,6 @@ export const AuthProvider = ({
         ["recruiter", account?.recruiter],
       ]),
     [account?.candidate, account?.recruiter]
-  );
-
-  const [activeProfile, setActiveProfile] = useState<ProfileKey>(() =>
-    profiles.get("candidate")
-      ? "candidate"
-      : profiles.get("recruiter")
-      ? "recruiter"
-      : "unknown"
   );
 
   const logoutMutate = useMutation(["@logout"], logout, {
@@ -66,17 +63,23 @@ export const AuthProvider = ({
 
   const profile = useCallback(() => {
     if (!canSwap) return profiles.get("candidate") || profiles.get("recruiter");
-    if (profiles.get(activeProfile)) return profiles.get(activeProfile);
+
+    if (!navigateAs) {
+      logoutMutate.mutate()
+      return;
+    }
+
+    if (profiles.get(navigateAs)) return profiles.get(navigateAs);
     logoutMutate.mutate();
-  }, [activeProfile, canSwap, logoutMutate, profiles]);
+  }, [navigateAs, canSwap, logoutMutate, profiles]);
 
   const swapProfile = useCallback(() => {
-    if (canSwap) {
-      setActiveProfile((old) =>
-        old === "candidate" ? "recruiter" : "candidate"
-      );
+    if (canSwap) {      
+      const active = navigateAs === "candidate" ? "recruiter" : "candidate"
+      document.cookie = `navigateas=${active}; path=/`
+      router.reload()
     }
-  }, [canSwap]);
+  }, [canSwap, navigateAs, router]);
 
   return (
     <AuthContext.Provider
@@ -86,7 +89,7 @@ export const AuthProvider = ({
         profile,
         swapProfile,
         canSwap,
-        activeProfile,
+        activeProfile: navigateAs!,
         logout: logoutMutate.mutate,
       }}
     >
