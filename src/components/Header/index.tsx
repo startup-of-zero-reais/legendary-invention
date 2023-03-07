@@ -303,16 +303,22 @@ interface NavItem {
   subLabel?: string;
   children?: Array<NavItem>;
   href?: string;
+  activeOn?: string[];
 }
 
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Procurar Vagas",
     href: "/",
+    activeOn: ["/"]
   },
   {
     label: "Minhas Vagas",
     href: "/dashboard/minhas-vagas",
+    activeOn: [
+      '/dashboard/area-candidato',
+      '/dashboard/area-recrutador',
+    ]
   },
 ];
 
@@ -320,6 +326,16 @@ function useActiveRoute() {
   const router = useRouter();
 
   const isActiveRoute = (href?: string) => {
+    const item = NAV_ITEMS.find(item => item.href === href)
+    
+    if (!item) return href === router.pathname;
+
+    const { activeOn, href: itemHref } = item
+
+    if (activeOn && activeOn.includes(router.pathname) && href == itemHref) {
+      return true;
+    }
+
     return href === router.pathname;
   };
 
