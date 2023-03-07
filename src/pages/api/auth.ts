@@ -19,12 +19,12 @@ export default async function handler(
 
       const response = await auth({ email, password });
 
-      res.setHeader(
-        "Set-Cookie",
-        serialize("session", response.headers["session"], { path: "/" })
-      );
+      res.setHeader("Set-Cookie", [
+        serialize("origin", "", { expires: new Date(0), path: "/" }),
+        serialize("session", response.headers["session"], { path: "/" }),
+      ]);
 
-      return res.status(200).send(req.headers.origin);
+      return res.status(200).send(req.cookies["origin"] ?? req.headers.origin);
     } catch (error) {
       const errorMessage: Record<number, string> = {
         400: "Credenciais inválidas.",
@@ -38,7 +38,7 @@ export default async function handler(
           .status(error.response?.status || HttpStatusCode.InternalServerError)
           .json({ message: errorMessage[error.response?.status || 0] });
       }
-      
+
       return res
         .status(HttpStatusCode.InternalServerError)
         .send({ message: errorMessage[0] });

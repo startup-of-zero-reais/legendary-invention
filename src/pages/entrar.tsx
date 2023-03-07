@@ -165,7 +165,7 @@ export default function Entrar() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const auth = AuthFactory.make();
-  
+
   const account = await auth.getSession();
 
   if (auth.isAuth(account)) {

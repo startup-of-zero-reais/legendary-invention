@@ -1,10 +1,13 @@
+import { useAuth } from "@/context/auth";
 import { Button, DrawerFooter } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import React from "react";
 import { useApply } from "./context";
 
 const Footer: React.FC = () => {
-  const { actionApply } = useApply();
+  const { actionApply, id } = useApply();
+  const { isAuth } = useAuth();
 
   const item = {
     hidden: {
@@ -27,9 +30,20 @@ const Footer: React.FC = () => {
       initial={"hidden"}
       animate={"visible"}
     >
-      <Button flex={1} colorScheme="blue" onClick={actionApply}>
-        Aplicar para posição
-      </Button>
+      {isAuth ? (
+        <Button flex={1} colorScheme="blue" onClick={actionApply}>
+          Aplicar para posição
+        </Button>
+      ) : (
+        <Button
+          flex={1}
+          colorScheme="blue"
+          as={Link}
+          href={`/cadastro?vaga=${id}`}
+        >
+          Cadastre-se e aplique agora
+        </Button>
+      )}
     </DrawerFooter>
   );
 };

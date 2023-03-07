@@ -13,6 +13,8 @@ import {
   PopoverContent,
   useColorModeValue,
   useDisclosure,
+  ComponentWithAs,
+  FlexProps,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -20,10 +22,11 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
-import Link from 'next/link'
+import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/auth";
 import ShowMe from "./show-me";
+import { useRouter } from "next/router";
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
@@ -117,6 +120,7 @@ const DesktopNav = () => {
   const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const isActiveRoute = useActiveRoute();
 
   return (
     <Stack alignItems={"center"} direction={"row"} spacing={4}>
@@ -127,6 +131,7 @@ const DesktopNav = () => {
               <ChakraLink
                 as={Link}
                 p={2}
+                position="relative"
                 href={navItem.href ?? "#"}
                 fontSize={"sm"}
                 fontWeight={500}
@@ -135,6 +140,20 @@ const DesktopNav = () => {
                   textDecoration: "none",
                   color: linkHoverColor,
                 }}
+                _activeLink={{ color: "red" }}
+                _after={
+                  isActiveRoute(navItem.href)
+                    ? {
+                        content: '""',
+                        borderBottomWidth: "2px",
+                        borderBottomColor: "blue.100",
+                        position: "absolute",
+                        width: "100%",
+                        left: 0,
+                        bottom: "-12px",
+                      }
+                    : {}
+                }
               >
                 {navItem.label}
               </ChakraLink>
@@ -218,6 +237,14 @@ const MobileNav = () => {
 const MobileNavItem = ({ label, children, href }: NavItem) => {
   const { isOpen, onToggle } = useDisclosure();
 
+  const isActiveRoute = useActiveRoute();
+
+  const activeLinkStyle: FlexProps = isActiveRoute(href)
+    ? {
+        backgroundColor: "blue.50",
+      }
+    : {};
+
   return (
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
@@ -225,10 +252,13 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         as={Link}
         href={href ?? "#"}
         justify={"space-between"}
+        borderRadius={5}
+        p={2}
         align={"center"}
         _hover={{
           textDecoration: "none",
         }}
+        {...activeLinkStyle}
       >
         <Text
           fontWeight={600}
@@ -285,3 +315,13 @@ const NAV_ITEMS: Array<NavItem> = [
     href: "/dashboard/minhas-vagas",
   },
 ];
+
+function useActiveRoute() {
+  const router = useRouter();
+
+  const isActiveRoute = (href?: string) => {
+    return href === router.pathname;
+  };
+
+  return isActiveRoute;
+}
