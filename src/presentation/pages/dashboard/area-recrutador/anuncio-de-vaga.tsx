@@ -1,10 +1,10 @@
-import { Button, ButtonGroup, Container, Divider, VStack } from "@chakra-ui/react";
+import { Button, Container, Divider, HStack, VStack } from "@chakra-ui/react";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components";
 import { MarkdownTextArea } from "@/components/TextArea/markdown-textarea";
 import { FiSave } from "react-icons/fi";
-
+import Switch from "@/components/Switch";
 
 interface JobFormInputs {
     title: string;
@@ -32,6 +32,7 @@ const NewJobAd = () => {
             <VStack
                 as={"form"}
                 onSubmit={handleSubmit(onSubmit)}
+                gap={4}
             >
                 <Input<JobFormInputs>
                     name="title"
@@ -47,16 +48,32 @@ const NewJobAd = () => {
                     {...register('description')}
                 />
 
-                <Input<JobFormInputs>
-                    name="salary"
-                    label="Salário"
-                    register={register}
-                    placeholder="Ex: 7.500"
-                    type={"number"}
-                    errorMessage={errors?.salary?.message}
-                    isInvalid={!!errors?.salary?.message}
-                    isCurrency
-                />
+                <HStack
+                    w="full"
+                    alignItems={"flex-end"}
+                >
+                    <Input<JobFormInputs>
+                        name="salary"
+                        label="Salário"
+                        register={register}
+                        placeholder="Ex: 7.500"
+                        type={"number"}
+                        errorMessage={errors?.salary?.message}
+                        isInvalid={!!errors?.salary?.message}
+                        isCurrency
+                    />
+
+                    <Switch<JobFormInputs>
+                        name="hideSalary"
+                        label="Esconder salário"
+                        register={register}
+                        justifyContent={'flex-end'}
+                        helperMessages={[
+                            'Ao esconder o salário aparecerá "A combinar"',
+                            'Os candidatos demonstram menos interesse em vagas com salário oculto'
+                        ]}
+                    />
+                </HStack>
 
                 <Divider pt={4} mb={`4 !important`} />
 

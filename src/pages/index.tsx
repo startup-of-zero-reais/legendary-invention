@@ -11,7 +11,7 @@ import { Container, Flex, useDisclosure } from "@chakra-ui/react";
 import { CONSTANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Account, JobModel } from "@/domain";
+import { JobModel } from "@/domain";
 import { FilterProvider } from "@/components/Filter/context";
 import { AuthProvider, AuthProviderProps, ProfileKey } from "../context/auth";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
