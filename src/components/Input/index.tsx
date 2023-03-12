@@ -9,9 +9,11 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  InputLeftAddon,
+  InputRightAddon,
 } from "@chakra-ui/react";
 import { FiEye, FiEyeOff } from 'react-icons/fi'
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Path, UseFormRegister } from "react-hook-form";
 import { RenderIf } from "../helpers/render-if";
 
@@ -21,6 +23,7 @@ interface InputProps<FormValues extends FV> extends ChakraInputProps {
   name: Path<FormValues>;
   label: string;
   register: UseFormRegister<FormValues>;
+  isCurrency?: boolean;
   isInvalid?: boolean;
   errorMessage?: string;
   helperMessages?: string[];
@@ -33,6 +36,7 @@ function Input<FormValues extends FV>(props: InputProps<FormValues>) {
     isInvalid = false,
     errorMessage = "",
     register,
+    isCurrency = false,
     helperMessages = [],
     type = 'text',
     ...rest
@@ -45,6 +49,10 @@ function Input<FormValues extends FV>(props: InputProps<FormValues>) {
     <FormControl isInvalid={isInvalid} id={name}>
       <FormLabel>{label}</FormLabel>
       <InputGroup>
+        <RenderIf condition={isCurrency}>
+          <InputLeftAddon>R$</InputLeftAddon>
+        </RenderIf>
+
         <ChakraInput
           {...rest}
           {...register(name)}
@@ -52,7 +60,13 @@ function Input<FormValues extends FV>(props: InputProps<FormValues>) {
           autoComplete="off"
           type={isVisible ? 'text' : type}
           background={"#fefefe"}
+          rounded={isCurrency ? 0 : undefined}
+          textAlign={isCurrency ? 'right' : 'left'}
         />
+
+        <RenderIf condition={isCurrency}>
+          <InputRightAddon>,00</InputRightAddon>
+        </RenderIf>
 
         <RenderIf condition={type === 'password'}>
           <InputRightElement>
