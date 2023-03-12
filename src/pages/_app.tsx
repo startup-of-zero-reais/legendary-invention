@@ -1,8 +1,10 @@
-import { theme } from "@/lib/theme";
-import { ChakraProvider } from "@chakra-ui/react";
-import type { AppProps } from "next/app";
+import { ReactElement, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import ProgressBar from 'nextjs-progressbar';
+import type { AppProps } from "next/app";
+import { NextPage } from "next";
+import { ChakraProvider } from "@chakra-ui/react";
+import { theme } from "@/lib/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,8 +15,18 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function App({ Component, pageProps }: AppProps) {
-  return (
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode
+}
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout || ((page: any) => page)
+
+  return getLayout(
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <ProgressBar />
