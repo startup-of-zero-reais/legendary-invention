@@ -16,6 +16,7 @@ export const theme = extendTheme({
       body: {
         width: "100%",
         height: "100%",
+        backgroundColor: 'gray.50',
       },
     }),
   },
