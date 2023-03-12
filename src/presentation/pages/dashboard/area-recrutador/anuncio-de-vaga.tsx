@@ -37,7 +37,8 @@ const NewJobAd = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors },
+        control,
     } = useForm<JobFormInputs>({
         resolver,
     })
@@ -74,6 +75,9 @@ const NewJobAd = () => {
                 <MarkdownTextArea
                     label="Descrição da vaga"
                     {...register('description')}
+                    control={control}
+                    errorMessage={errors?.description?.message}
+                    isInvalid={!!errors?.description?.message}
                 />
 
                 <HStack
