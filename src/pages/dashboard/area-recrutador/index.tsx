@@ -2,9 +2,15 @@ import { Header } from "@/components"
 import { AuthProvider, AuthProviderProps } from "@/context/auth"
 import { CONSTANTS } from "@/lib/constants"
 import { AuthFactory } from "@/server-lib/factory/auth"
-import { Heading } from "@chakra-ui/react"
 import { GetServerSideProps } from "next"
+import dynamic from "next/dynamic"
 import Head from "next/head"
+import { Suspense } from "react"
+
+const LazyRecruiterArea = dynamic(
+    () => import('@/presentation/pages/dashboard/area-recrutador'),
+    { ssr: true }
+)
 
 interface MyJobsProps {
     authProps: AuthProviderProps;
@@ -23,7 +29,9 @@ const RecruiterArea = ({
             </Head>
             <Header />
 
-            <Heading>Area do recrutador</Heading>
+            <Suspense>
+                <LazyRecruiterArea />
+            </Suspense>
         </AuthProvider>
     )
 }
