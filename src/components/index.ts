@@ -4,6 +4,7 @@ export { default as Filter } from "./Filter";
 export { default as Header } from "./Header";
 export { RenderIf } from "./helpers/render-if";
 export { default as Input } from "./Input";
+export { default as InputZipSearch } from "./Input/zip-search";
 export { default as LogoCompany } from "./LogoCompany";
 export { default as ModalApplyVacancy } from "./ModalApplyVacancy";
 export { default as RadioGroup } from "./RadioGroup";
