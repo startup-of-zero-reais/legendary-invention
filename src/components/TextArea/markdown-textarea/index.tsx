@@ -5,10 +5,10 @@ import dynamic from "next/dynamic";
 import rehypeSanitize from "rehype-sanitize";
 import Code from "./mermaid-support";
 import { Button, Flex, FormControl, FormErrorMessage, FormLabel, ScaleFade } from "@chakra-ui/react";
-import { ReactNode, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { rewriteAnchor } from "./rewrite-anchors";
 import { toolbar } from "./toolbar";
-import { Control, Controller, useController } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 
 const MDEditor = dynamic(
     () => import("@uiw/react-md-editor"),
@@ -48,7 +48,7 @@ De segunda à sexta das 09h00 às 18h00 com 1 hora de almoço
 Você gostaria de acrescentar algo a mais sobre a vaga ?
 `
 
-export const MarkdownTextArea = ({
+const MarkdownTextArea = ({
     name,
     label,
     control,
@@ -126,3 +126,5 @@ export const MarkdownTextArea = ({
         </Flex>
     )
 }
+
+export default MarkdownTextArea

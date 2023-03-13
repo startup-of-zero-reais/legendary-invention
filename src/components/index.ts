@@ -9,6 +9,8 @@ export { default as ModalApplyVacancy } from "./ModalApplyVacancy";
 export { default as RadioGroup } from "./RadioGroup";
 export { default as RangeSlider } from "./RangeSlider";
 export { default as Search } from "./Search";
+export { default as MultiSelectText } from "./Select/multi-select-text";
 export { default as Techs } from "./Techs";
+export { default as TextAreaWithMarkdown } from "./TextArea/markdown-textarea";
 export { default as WrapListVacancies } from "./WrapListVacancies";
 export { default as ErrorMessage } from "./ErrorMessage";
