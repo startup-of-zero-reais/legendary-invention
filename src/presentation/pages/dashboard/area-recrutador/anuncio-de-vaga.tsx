@@ -4,8 +4,8 @@ import { FiSave } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from 'yup';
-import { Input } from "@/components";
-import { MarkdownTextArea } from "@/components/TextArea/markdown-textarea";
+import { Input, MultiSelectText } from "@/components";
+import { TextAreaWithMarkdown } from "@/components";
 import Switch from "@/components/Switch";
 import RadioButton from "@/components/RadioButton";
 
@@ -27,8 +27,13 @@ const resolver = yupResolver(
         salary: yup.string().required('Você deve informar o salário para a vaga'),
         hideSalary: yup.boolean(),
         availability: yup.string().required('Selecione a disponibilidade desejada para a vaga'),
-        contracts: yup.array(),
-        techs: yup.array(),
+        contracts: yup.array()
+            .min(1, 'Você deve selecionar pelo menos 1 regime')
+            .max(2, 'Você pode selecionar até 2 regimes')
+            .required('Selecione ao menos 1 regime de contratação'),
+        techs: yup.array()
+            .min(1, 'Você deve selecionar pelo menos 1 tecnologia')
+            .max(5, 'Você pode selecionar até 5 tecnologias'),
         location: yup.string(),
     }),
 )
@@ -44,7 +49,7 @@ const NewJobAd = () => {
     })
 
     const onSubmit = useCallback((data: JobFormInputs) => {
-        alert(JSON.stringify(data))
+        console.log(JSON.stringify(data))
     }, [])
 
     useEffect(() => {
@@ -72,7 +77,7 @@ const NewJobAd = () => {
                     isInvalid={!!errors?.title?.message}
                 />
 
-                <MarkdownTextArea
+                <TextAreaWithMarkdown
                     label="Descrição da vaga"
                     {...register('description')}
                     control={control}
@@ -125,6 +130,27 @@ const NewJobAd = () => {
                     onRight
                 />
 
+                <MultiSelectText<JobFormInputs>
+                    name="contracts"
+                    label="Regime de contratação"
+                    register={register}
+                    placeholder="Ex: CLT, PJ"
+                    options={() => Promise.resolve(options)}
+                    errorMessage={errors?.contracts?.message}
+                    isInvalid={!!errors?.contracts?.message}
+                />
+
+                <MultiSelectText<JobFormInputs>
+                    name="techs"
+                    label="Tecnologias"
+                    register={register}
+                    placeholder="Ex: Javascript, PHP"
+                    options={() => Promise.resolve(options)}
+                    errorMessage={errors?.techs?.message}
+                    isInvalid={!!errors?.techs?.message}
+                    tagColorScheme="purple"
+                />
+
                 <Divider pt={4} mb={`4 !important`} />
 
                 <Button leftIcon={<FiSave />} type="submit">Enviar vaga</Button>
@@ -134,3 +160,9 @@ const NewJobAd = () => {
 }
 
 export default NewJobAd
+
+const options = Array.from({ length: 10 })
+    .map((_, i) => ({
+        label: `Option ${i+1}`,
+        value: `${i+1}`,
+    }))
