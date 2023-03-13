@@ -8,6 +8,7 @@ import { Input, MultiSelectText } from "@/components";
 import { TextAreaWithMarkdown } from "@/components";
 import Switch from "@/components/Switch";
 import RadioButton from "@/components/RadioButton";
+import { Option } from "@/components/Select/multi-select-text";
 
 interface JobFormInputs {
     title: string;
@@ -57,7 +58,7 @@ const NewJobAd = () => {
         if (errors)
             console.log(errors)
     }, [errors])
-    
+
     return (
         <Container
             maxW={"container.lg"}
@@ -136,7 +137,7 @@ const NewJobAd = () => {
                     label="Regime de contratação"
                     register={register}
                     placeholder="Ex: CLT, PJ"
-                    options={() => Promise.resolve(options)}
+                    options={contracts}
                     errorMessage={errors?.contracts?.message}
                     isInvalid={!!errors?.contracts?.message}
                 />
@@ -146,7 +147,7 @@ const NewJobAd = () => {
                     label="Tecnologias"
                     register={register}
                     placeholder="Ex: Javascript, PHP"
-                    options={() => Promise.resolve(options)}
+                    options={techs}
                     errorMessage={errors?.techs?.message}
                     isInvalid={!!errors?.techs?.message}
                     tagColorScheme="purple"
@@ -162,8 +163,26 @@ const NewJobAd = () => {
 
 export default NewJobAd
 
-const options = Array.from({ length: 10 })
-    .map((_, i) => ({
-        label: `Option ${i+1}`,
-        value: `${i+1}`,
-    }))
+const contracts: Option[] = [
+    { label: "Autônomo", value: "Autônomo" },
+    { label: "CLT (Efetivo)", value: "CLT" },
+    { label: "Cooperado", value: "Cooperado" },
+    { label: "Free-lancer", value: "Free-lancer" },
+    { label: "Prestador de serviços (PJ)", value: "Prestador de serviços (PJ)" },
+    { label: "Temporário", value: "Temporário" },
+    { label: "Trainee", value: "Trainee" },
+]
+
+const techs: Option[] = [
+    { label: "PHP", value: "PHP" },
+    { label: "Javascript", value: "Javascript" },
+    { label: "Golang", value: "Golang" },
+    { label: "Java", value: "Java" },
+    { label: "Python", value: "Python" },
+    { label: "Ruby", value: "Ruby" },
+    { label: "Rust", value: "Rust" },
+    { label: "Adobe XD", value: "Adobe XD" },
+    { label: "Figma", value: "Figma" },
+    { label: "Sketch", value: "Sketch" },
+    { label: "Photoshop", value: "Photoshop" },
+]
