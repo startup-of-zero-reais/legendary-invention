@@ -33,7 +33,8 @@ const resolver = yupResolver(
             .required('Selecione ao menos 1 regime de contratação'),
         techs: yup.array()
             .min(1, 'Você deve selecionar pelo menos 1 tecnologia')
-            .max(5, 'Você pode selecionar até 5 tecnologias'),
+            .max(5, 'Você pode selecionar até 5 tecnologias')
+            .required('Selecione ao menos 1 tecnologia para a vaga'),
         location: yup.string(),
     }),
 )
