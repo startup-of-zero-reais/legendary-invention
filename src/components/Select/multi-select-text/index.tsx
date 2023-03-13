@@ -1,6 +1,7 @@
 import { RenderIf } from "@/components/helpers/render-if";
 import { useDebounce } from "@/lib/debounce";
 import {
+    Box,
     Button,
     Card,
     FormControl,
@@ -21,7 +22,7 @@ import { Path, UseFormRegister } from "react-hook-form";
 
 type FV = { [k: string]: any };
 
-interface Option {
+export interface Option {
     label: string;
     value: string;
 }
@@ -109,9 +110,15 @@ function MultiSelectText<FormValues extends FV>({
 
     const onClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         const input = e.currentTarget?.innerText || ''
+
+        console.log(input)
             
         const option = filteredSuggestions
-            .find(suggestion => suggestion.label.toLowerCase() === input.toLowerCase())
+            .find(suggestion => suggestion.label.toLowerCase() === input.toLowerCase()) ??
+        loadedOptions.current
+                .find(suggestion => suggestion.label.toLowerCase() === input.toLowerCase())
+
+        console.log(option)
 
         if (option)
             selectOption(option)
@@ -162,8 +169,6 @@ function MultiSelectText<FormValues extends FV>({
 
     const removeOption = useCallback((value: Option['value']) => {
         return (e: React.MouseEvent) => {
-            console.log(e);
-
             inputRef.current?.focus()
             
             setSelected([
@@ -188,27 +193,71 @@ function MultiSelectText<FormValues extends FV>({
                 .filter(option => !selected.find(s => s.value === option.value))
         }
 
+        if (loadedOptions.current.length === 0) {
+            return [{ value: "", label: 'Nenhuma opção' }]
+        }
+
         return loadedOptions.current
     })()
 
     return (
-        <VStack position="relative" align={"stretch"} w="full">
+        <VStack align={"stretch"} w="full">
             <FormControl isInvalid={isInvalid}>
-                <FormLabel
-                    htmlFor={name}
-                    ref={inputRef}
-                >
-                    {label}
-                </FormLabel>
+                <Box position="relative">
+                    <FormLabel
+                        htmlFor={name}
+                        ref={inputRef}
+                    >
+                        {label}
+                    </FormLabel>
 
-                <ChakraInput
-                    id={name}
-                    onKeyDown={onKeyDown}
-                    autoComplete="off"
-                    {...rest}
-                    {...registered}
-                    value={userInput}
-                />
+                    <ChakraInput
+                        id={name}
+                        onClick={() => setShowSuggestions(true)}
+                        onKeyDown={onKeyDown}
+                        autoComplete="off"
+                        {...rest}
+                        {...registered}
+                        value={userInput}
+                    />
+
+                    <RenderIf condition={showSuggestions}>
+                        <ScaleFade in={showSuggestions}>
+                            <Card
+                                size={"sm"}
+                                position="absolute"
+                                insetX={0}
+                                top={"100%"}
+                                mt={2}
+                                bgColor="white"
+                                zIndex={10}
+                                gap={2}
+                                py={2}
+                            >
+                                    {mapOptions.map(({ label, value }, key) => (
+                                        <Button
+                                            size="sm"
+                                            variant={"ghost"}
+                                            justifyContent="flex-start"
+                                            colorScheme={"gray"}
+                                            tabIndex={key}
+                                            py={1}
+                                            px={4}
+                                            value={value}
+                                            key={key}
+                                            _hover={{ bgColor: "gray.50" }}
+                                            bgColor={key === activeSuggestion ? "gray.50" : undefined}
+                                            onClick={onClick}
+                                            isDisabled={!value}
+                                            fontWeight="normal"
+                                        >
+                                            {label}
+                                        </Button>
+                                    ))}
+                            </Card>
+                        </ScaleFade>
+                    </RenderIf>
+                </Box>
 
                 <Stack flexDir='row' my={2} gap={2}>
                     {selected.map(({ label, value }, i) => (
@@ -230,39 +279,6 @@ function MultiSelectText<FormValues extends FV>({
                     <FormErrorMessage>{errorMessage}</FormErrorMessage>
                 </ScaleFade>
             </FormControl>
-
-            <RenderIf condition={showSuggestions}>
-                <ScaleFade in={showSuggestions}>
-                    <Card
-                        size={"sm"}
-                        position="absolute"
-                        insetX={0}
-                        top={"100%"}
-                        bgColor="white"
-                        zIndex={10}
-                        gap={2}
-                        py={2}
-                    >
-                            {mapOptions.map(({ label, value }, key) => (
-                                <Button
-                                    variant={"ghost"}
-                                    justifyContent="flex-start"
-                                    colorScheme={"gray"}
-                                    tabIndex={key}
-                                    py={1}
-                                    px={4}
-                                    value={value}
-                                    key={key}
-                                    _hover={{ bgColor: "gray.50" }}
-                                    bgColor={key === activeSuggestion ? "gray.50" : undefined}
-                                    onClick={onClick}
-                                >
-                                    {label}
-                                </Button>
-                            ))}
-                    </Card>
-                </ScaleFade>
-            </RenderIf>
         </VStack>
 
                         
