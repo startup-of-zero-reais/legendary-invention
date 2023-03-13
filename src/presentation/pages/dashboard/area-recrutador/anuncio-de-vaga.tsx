@@ -1,10 +1,16 @@
-import { Button, Container, Divider, HStack, VStack } from "@chakra-ui/react";
+import {
+    Button,
+    Container,
+    Divider,
+    HStack,
+    VStack,
+} from "@chakra-ui/react";
 import { useCallback, useEffect } from "react";
-import { FiSave } from "react-icons/fi";
+import { FiSave, FiX } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from 'yup';
-import { Input, MultiSelectText } from "@/components";
+import { Input, InputZipSearch, MultiSelectText } from "@/components";
 import { TextAreaWithMarkdown } from "@/components";
 import Switch from "@/components/Switch";
 import RadioButton from "@/components/RadioButton";
@@ -36,11 +42,14 @@ const resolver = yupResolver(
             .min(1, 'Você deve selecionar pelo menos 1 tecnologia')
             .max(5, 'Você pode selecionar até 5 tecnologias')
             .required('Selecione ao menos 1 tecnologia para a vaga'),
-        location: yup.string(),
+        location: yup.string()
+            .required('Digite o cep para onde é a posição'),
     }),
 )
 
-const NewJobAd = () => {    
+const NewJobAd = () => {
+    
+
     const {
         register,
         handleSubmit,
@@ -58,6 +67,7 @@ const NewJobAd = () => {
         if (errors)
             console.log(errors)
     }, [errors])
+
 
     return (
         <Container
@@ -151,6 +161,15 @@ const NewJobAd = () => {
                     errorMessage={errors?.techs?.message}
                     isInvalid={!!errors?.techs?.message}
                     tagColorScheme="purple"
+                />
+
+                <InputZipSearch<JobFormInputs>
+                    name="location"
+                    label="Cidade"
+                    register={register}
+                    placeholder="Ex: 00000-000"
+                    errorMessage={errors?.location?.message}
+                    isInvalid={!!errors?.location?.message}
                 />
 
                 <Divider pt={4} mb={`4 !important`} />
