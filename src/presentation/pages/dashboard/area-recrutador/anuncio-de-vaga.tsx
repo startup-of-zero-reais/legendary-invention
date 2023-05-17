@@ -6,7 +6,7 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect } from "react";
-import { FiSave, FiX } from "react-icons/fi";
+import { FiSave } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from 'yup';
