@@ -13,7 +13,7 @@ const Code = ({ inline, children = [], className, ...props }: any) => {
   useEffect(() => {
     if (demo.current) {
       try {
-        const str = mermaid.render(demoid.current, code, () => null, demo.current);
+        const str = mermaid.render(demoid.current, code, demo.current);
         // @ts-ignore
         demo.current.innerHTML = str;
       } catch (error) {

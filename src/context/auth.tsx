@@ -1,10 +1,9 @@
-import { Account, LoadMe } from "@/domain";
+import { LoadMe } from "@/domain";
 import { Nullable } from "@/lib/nullable";
 import { signOut, useSession } from "next-auth/react";
 import React, { useContext } from "react";
 
 interface AuthContextModel {
-  isAuth: boolean;
   whoAmi: Nullable<LoadMe.Model>;
   logout?: () => void;
 }
@@ -13,23 +12,17 @@ const AuthContext = React.createContext<AuthContextModel>(
   {} as AuthContextModel
 );
 
-export interface AuthProviderProps {
-  account: Nullable<Account>;
-  canSwap: boolean;
-  isAuth: boolean;
-}
 
-interface WithChildrenProps extends AuthProviderProps {
+interface WithChildrenProps {
   children: React.ReactNode;  
 }
 
 export const AuthProvider = ({
   children,
-  canSwap,
-  isAuth,
-  account,
 }: WithChildrenProps) => {
   const { status, data } = useSession()
+
+  let account: Nullable<any>;
 
   if (status === "authenticated" && data?.user) {
     account = {
@@ -43,7 +36,6 @@ export const AuthProvider = ({
   return (
     <AuthContext.Provider
       value={{
-        isAuth,
         whoAmi: account,
         logout: signOut,
       }}

@@ -1,9 +1,8 @@
 import { Header, RenderIf } from "@/components";
-import { AuthProvider, AuthProviderProps } from "@/context/auth";
+import { AuthProvider } from "@/context/auth";
 import { LoadAppliedJobs } from "@/domain";
 import { CONSTANTS } from "@/lib/constants";
 import { getAppliedJobs } from "@/server-lib/api/apply";
-import { AuthFactory } from "@/server-lib/factory/auth";
 import { useDisclosure, Stack } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -20,11 +19,10 @@ const LazyJobDrawer = dynamic(() => import("../components/job-drawer"), {
 });
 
 interface CandidateAreaProps {
-  authProps: AuthProviderProps;
   jobs: LoadAppliedJobs.JobModel[];
 }
 
-const CandidateArea = ({ authProps, jobs }: CandidateAreaProps) => {
+const CandidateArea = ({ jobs }: CandidateAreaProps) => {
   const {
     query: { vaga },
     back,
@@ -45,7 +43,7 @@ const CandidateArea = ({ authProps, jobs }: CandidateAreaProps) => {
   }, [back, onClose, jobID]);
 
   return (
-    <AuthProvider {...authProps}>
+    <AuthProvider>
       <Head>
         <title>{CONSTANTS.name_application}</title>
         <meta name="description" content={CONSTANTS.description_application} />
@@ -80,32 +78,10 @@ export default CandidateArea;
 export const getServerSideProps: GetServerSideProps<
   CandidateAreaProps
 > = async (context) => {
-  const auth = AuthFactory.make();
 
-  const [authProps, myJobs] = await Promise.all([
-    auth.authProps(context),
+  const [myJobs] = await Promise.all([
     getAppliedJobs(),
   ]);
-
-  const { isAuth, navigateAs } = authProps;
-
-  if (!isAuth) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/",
-      },
-    };
-  }
-
-  if (navigateAs === "recruiter") {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/dashboard/minhas-vagas",
-      },
-    };
-  }
 
   const jobs: LoadAppliedJobs.JobModel[] = [];
   for (const job of myJobs.data) {
@@ -114,7 +90,6 @@ export const getServerSideProps: GetServerSideProps<
 
   return {
     props: {
-      authProps,
       jobs,
     },
   };

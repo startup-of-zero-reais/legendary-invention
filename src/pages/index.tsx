@@ -13,22 +13,19 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { JobModel } from "@/domain";
 import { FilterProvider } from "@/components/Filter/context";
-import { AuthProvider, AuthProviderProps, ProfileKey } from "../context/auth";
+import { AuthProvider } from "../context/auth";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
 import { Filters } from "@/domain/models/filters";
-import { AuthFactory } from "@/server-lib/factory/auth";
 import { Nullable } from "@/lib/nullable";
 import { getFilters } from "@/server-lib/api/filters";
 import { getJob } from "@/server-lib/api/jobs";
 import { getLocations } from "@/server-lib/api/locations";
 import { Location } from "@/domain/models/location";
 import { getAppliedJobs } from "@/server-lib/api/apply";
-import { request } from "@/server-lib/services";
 
 type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 interface HomeProps {
-  authProps: AuthProviderProps;
   job: Nullable<JobModel>;
   filters: Filters.Embedded["_embedded"];
   locations: Location[];
@@ -36,7 +33,6 @@ interface HomeProps {
 };
 
 export default function Home({
-  authProps,
   filters,
   locations,
   job,
@@ -55,7 +51,7 @@ export default function Home({
   }, [onOpen, vacancyId]);
 
   return (
-    <AuthProvider {...authProps}>
+    <AuthProvider>
       <Head>
         <title>{CONSTANTS.name_application}</title>
         <meta name="description" content={CONSTANTS.description_application} />
@@ -111,20 +107,13 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
 
   const vacancyId = vaga as string;
 
-  const auth = AuthFactory.make();
-
-  request.defaults.headers.common.Authorization = auth
-    .getAuthToken(context)
-    .toBearer()
 
   const [
-    authProps,
     { _embedded: filters },
     job,
     locations,
     appliedJobsResult,
   ] = await Promise.all([
-    auth.authProps(context),
     getFilters().catch(() => ({ _embedded: { techs: [], contracts: [], availability: [] } })),
     getJob(vacancyId).catch(() => null),
     getLocations().catch(() => []),
@@ -135,7 +124,6 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
 
   return {
     props: {
-      authProps,
       job,
       filters,
       locations,

@@ -1,9 +1,8 @@
 import { Header } from "@/components"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
-import { AuthProvider, AuthProviderProps } from "@/context/auth"
+import { AuthProvider } from "@/context/auth"
 import { CONSTANTS } from "@/lib/constants"
-import { AuthFactory } from "@/server-lib/factory/auth"
 import dynamic from "next/dynamic"
 
 const JobAdComponent = dynamic(
@@ -12,12 +11,11 @@ const JobAdComponent = dynamic(
 )
 
 interface NewJobAdProps  {
-    authProps: AuthProviderProps
 }
 
-const NewJobAd = ({ authProps }: NewJobAdProps) => {
+const NewJobAd = ({  }: NewJobAdProps) => {
     return (
-        <AuthProvider {...authProps}>
+        <AuthProvider>
             <Head>
                 <title>{CONSTANTS.name_application}</title>
                 <meta name="description" content={CONSTANTS.description_application} />
@@ -36,13 +34,8 @@ export default NewJobAd
 export const getServerSideProps: GetServerSideProps<NewJobAdProps> = async (
     context
 ) => {
-    const auth = AuthFactory.make()
-
-    const authProps = await auth.authProps(context)
-
     return {
         props: {
-            authProps,
         }
     }
 }

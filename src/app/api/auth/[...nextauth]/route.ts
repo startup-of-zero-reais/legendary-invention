@@ -13,10 +13,23 @@ const authOpts: NextAuthOptions = {
             clientSecret: process.env.GITHUB_CLIENT_SECRET!
         })
     ],
-    pages:  {
-        signIn: '/entrar',
-        error: '/entrar'
+    callbacks: {
+        signIn(params) {
+            const { user, account } = params;
+            if (!user) {
+                return false;
+            }
+
+            console.log('User was logged with %s provider', account?.provider)
+
+            return true;
+        },
     }
 }
 
-export default NextAuth(authOpts)
+const handler = NextAuth(authOpts)
+
+export {
+    handler as GET,
+    handler as POST
+}
