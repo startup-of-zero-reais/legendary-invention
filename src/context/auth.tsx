@@ -1,17 +1,11 @@
-import { Account, Candidate, LoadMe, Recruiter } from "@/domain";
+import { Account, LoadMe } from "@/domain";
 import { Nullable } from "@/lib/nullable";
-import { logout } from "@/server-lib/api/auth";
-import { useRouter } from "next/router";
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import { useMutation } from "react-query";
+import { signOut, useSession } from "next-auth/react";
+import React, { useContext } from "react";
 
 interface AuthContextModel {
   isAuth: boolean;
   whoAmi: Nullable<LoadMe.Model>;
-  profile: () => Profile;
-  swapProfile: () => void;
-  canSwap: boolean;
-  activeProfile: ProfileKey;
   logout?: () => void;
 }
 
@@ -23,74 +17,35 @@ export interface AuthProviderProps {
   account: Nullable<Account>;
   canSwap: boolean;
   isAuth: boolean;
-  navigateAs: Nullable<ProfileKey>;
 }
 
 interface WithChildrenProps extends AuthProviderProps {
   children: React.ReactNode;  
 }
 
-type Profile = Candidate | Recruiter | undefined;
-export type ProfileKey = "candidate" | "recruiter" | "unknown";
-
 export const AuthProvider = ({
   children,
   canSwap,
   isAuth,
   account,
-  navigateAs
 }: WithChildrenProps) => {
-  const router = useRouter();
+  const { status, data } = useSession()
 
-  const profiles = useMemo(
-    () =>
-      new Map<ProfileKey, Profile>([
-        ["candidate", account?.candidate],
-        ["recruiter", account?.recruiter],
-      ]),
-    [account?.candidate, account?.recruiter]
-  );
-
-  const logoutMutate = useMutation(["@logout"], logout, {
-    onSuccess: () => {
-      router.push("/entrar");
-    },
-    onError: () => {
-      profiles.clear();
-    },
-    retry: 0,
-  });
-
-  const profile = useCallback(() => {
-    if (!canSwap) return profiles.get("candidate") || profiles.get("recruiter");
-
-    if (!navigateAs) {
-      logoutMutate.mutate()
-      return;
-    }
-
-    if (profiles.get(navigateAs)) return profiles.get(navigateAs);
-    logoutMutate.mutate();
-  }, [navigateAs, canSwap, logoutMutate, profiles]);
-
-  const swapProfile = useCallback(() => {
-    if (canSwap) {      
-      const active = navigateAs === "candidate" ? "recruiter" : "candidate"
-      document.cookie = `navigateas=${active}; path=/`
-      router.reload()
-    }
-  }, [canSwap, navigateAs, router]);
+  if (status === "authenticated" && data?.user) {
+    account = {
+        email: data.user.email!,
+        image: data.user.image!,
+        name: data.user.name!,
+        id: performance.now().toString(),
+    }    
+  }
 
   return (
     <AuthContext.Provider
       value={{
         isAuth,
         whoAmi: account,
-        profile,
-        swapProfile,
-        canSwap,
-        activeProfile: navigateAs!,
-        logout: logoutMutate.mutate,
+        logout: signOut,
       }}
     >
       {children}

@@ -27,6 +27,8 @@ import Image from "next/image";
 import { useAuth } from "@/context/auth";
 import ShowMe from "./show-me";
 import { useRouter } from "next/router";
+import { BsArrowRight, BsGithub, BsGoogle } from "react-icons/bs";
+import { signIn } from "next-auth/react";
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
@@ -80,30 +82,32 @@ export default function WithSubnavigation() {
             justify={"flex-end"}
             direction={"row"}
             flexGrow={0}
-            spacing={6}
+            spacing={4}
+            alignItems={"center"}
           >
-            <Button
-              as={Link}
-              fontSize={"sm"}
-              fontWeight={400}
-              variant={"link"}
-              href={"/entrar"}
-            >
-              Login
-            </Button>
-            <Button
-              as={"a"}
+            <Text
               display={{ base: "none", md: "inline-flex" }}
-              fontSize={"sm"}
-              fontWeight={600}
-              color={"white"}
-              bg={"pink.400"}
-              href={"/cadastro"}
-              _hover={{
-                bg: "pink.300",
-              }}
+              alignItems={"center"}
+              gap={2}
             >
-              Registre-se
+                Acesso fácil <BsArrowRight />
+            </Text>
+            <Button
+              display={{ base: "none", md: "inline-flex" }}
+              onClick={() => signIn('google')}
+              gap={2}
+              color={'#4285F4'}
+            >
+              <BsGoogle size={22} />
+            </Button>
+
+            <Button
+              display={{ base: "none", md: "inline-flex" }}
+              onClick={() => signIn('github')}
+              gap={2}
+              color={'black'}
+            >
+              <BsGithub size={24} />
             </Button>
           </Stack>
         )}

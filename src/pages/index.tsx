@@ -125,10 +125,10 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
     appliedJobsResult,
   ] = await Promise.all([
     auth.authProps(context),
-    getFilters(),
-    getJob(vacancyId),
-    getLocations(),
-    getAppliedJobs(),
+    getFilters().catch(() => ({ _embedded: { techs: [], contracts: [], availability: [] } })),
+    getJob(vacancyId).catch(() => null),
+    getLocations().catch(() => []),
+    getAppliedJobs().catch(() => ({ data: [] })),
   ]);
 
   const appliedJobs = appliedJobsResult.data.map(data => data.job.id)

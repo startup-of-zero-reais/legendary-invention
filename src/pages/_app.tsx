@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import ProgressBar from 'nextjs-progressbar';
 import type { AppProps } from "next/app";
 import { NextPage } from "next";
+import { SessionProvider } from 'next-auth/react'
 import { ChakraProvider } from "@chakra-ui/react";
 import { theme } from "@/lib/theme";
 
@@ -27,11 +28,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page: any) => page)
 
   return getLayout(
-    <ChakraProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <ProgressBar />
-        <Component {...pageProps} />
-      </QueryClientProvider>
-    </ChakraProvider>
+    <SessionProvider session={pageProps.session}>
+      <ChakraProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <ProgressBar />
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      </ChakraProvider>
+    </SessionProvider>
   );
 }

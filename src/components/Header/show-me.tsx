@@ -12,9 +12,9 @@ import {
 import React from "react";
 
 const ShowMe: React.FC = () => {
-  const { activeProfile, canSwap, profile, swapProfile, logout } = useAuth();
+  const { whoAmi, logout } = useAuth();
 
-  const hasProfile = profile();
+  const hasProfile = !!whoAmi;
 
   if (!hasProfile) return null;
 
@@ -36,7 +36,7 @@ const ShowMe: React.FC = () => {
         <Avatar
           size={"sm"}
           src={
-            hasProfile.image ||
+            whoAmi.image ||
             "https://avatars.dicebear.com/api/male/username.svg"
           }
         />
@@ -46,21 +46,17 @@ const ShowMe: React.FC = () => {
           <Avatar
             size={"2xl"}
             src={
-              hasProfile.image ||
+              whoAmi.image ||
               "https://avatars.dicebear.com/api/male/username.svg"
             }
           />
         </Center>
         <Center>
-          <p>{hasProfile.name}</p>
+          <p>{whoAmi.name}</p>
         </Center>
         <br />
         <MenuDivider />
-        {canSwap ? (
-          <MenuItem onClick={swapProfile}>
-            Trocar para {translatePortuguese[activeProfile]}
-          </MenuItem>
-        ) : null}
+        
         <MenuItem onClick={logout}>Sair da conta</MenuItem>
       </MenuList>
     </Menu>
