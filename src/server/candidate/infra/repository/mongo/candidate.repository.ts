@@ -1,4 +1,3 @@
-import { Model } from 'mongoose';
 import { PaginationInterface } from '@/server/@shared/repository/pagination-interface';
 import { Candidate as Entity, CandidateRepositoryInterface } from '@/server/candidate/domain';
 import PaginationPresenter from '../presenter/pagination.presenter';
@@ -11,12 +10,8 @@ export default class CandidateMongoRepository
 	implements CandidateRepositoryInterface
 {
 	static make() {
-		return new CandidateMongoRepository(new Candidate())
+		return new CandidateMongoRepository()
 	}
-
-	constructor(
-		private candidateModel: Model<Entity>,
-	) {}
 
 	delete(id: string): Promise<void> {
 		throw new Error('Method not implemented.');
@@ -26,12 +21,9 @@ export default class CandidateMongoRepository
 		per_page = 10,
 		page = 1,
 	): Promise<PaginationInterface<Entity>> {
-		const model = await (new Candidate()).find()
-		console.log('MODEL',model)
-
 		const [countCandidates, candidates] = await Promise.all([
-			await this.candidateModel.find().countDocuments().exec(),
-			await this.candidateModel
+			await Candidate.find().countDocuments().exec(),
+			await Candidate
 				.find()
 				.sort({ createdAt: -1 })
 				.limit(per_page)
@@ -48,7 +40,7 @@ export default class CandidateMongoRepository
 	}
 
 	async create(entity: Entity): Promise<void> {
-		await this.candidateModel.create({
+		await Candidate.create({
 			_id: entity.id,
 			name: entity.name,
 			email: entity.email,
@@ -65,7 +57,7 @@ export default class CandidateMongoRepository
 	}
 
 	async update(entity: Entity): Promise<void> {
-		await this.candidateModel
+		await Candidate
 			.findByIdAndUpdate(entity.id, {
 				name: entity.name,
 				image: entity.image,
@@ -76,12 +68,12 @@ export default class CandidateMongoRepository
 	}
 
 	async findByEmail(email: string): Promise<Entity> {
-		const candidate = await this.candidateModel.findOne({ email }).exec();
+		const candidate = await Candidate.findOne({ email }).exec();
 		return this.toDomain(candidate);
 	}
 
 	async find(id: string): Promise<Entity> {
-		const candidate = await this.candidateModel.findOne({ _id: id }).exec();
+		const candidate = await Candidate.findOne({ _id: id }).exec();
 		return this.toDomain(candidate);
 	}
 

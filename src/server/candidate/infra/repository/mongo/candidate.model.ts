@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 import { professionalExperienceSchema } from './professional-experience.model';
 import { techsSchema } from './techs.model';
 import { Candidate as CandidateDomain } from '@/server/candidate/domain';
@@ -27,5 +27,5 @@ export const candidateSchema = new Schema<CandidateDomain>({
 	}
 })
 
-export const Candidate = mongoose.models.Candidate<CandidateDomain>
+export const Candidate = mongoose.models.Candidate as Model<CandidateDomain>
 	|| mongoose.model<CandidateDomain>('Candidate', candidateSchema);
