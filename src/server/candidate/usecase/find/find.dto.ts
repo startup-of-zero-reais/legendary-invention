@@ -1,0 +1,69 @@
+import { Exclude, Expose, plainToClass, Transform } from 'class-transformer';
+import { IsNotEmpty } from 'class-validator';
+import { ProfessionalExperience, Tech } from '@/server/candidate/domain';
+
+export class FindInputDto {
+	@IsNotEmpty()
+	id: string;
+}
+
+@Exclude()
+export class FindOutputDto {
+	@Expose()
+	id: string;
+
+	@Expose()
+	name: string;
+
+	@Expose()
+	email: string;
+
+	@Expose()
+	image: string;
+
+	@Expose()
+	phone: string;
+
+	@Expose()
+	@Transform(({ value }) => plainToClass(TechOutputDto, value))
+	techs: Tech[];
+
+	@Expose()
+	@Transform(({ value }) =>
+		plainToClass(ProfessionalExperienceOutputDto, value),
+	)
+	professionalExperiences: ProfessionalExperience[];
+
+	@Expose()
+	createdAt: Date;
+
+	@Expose()
+	updatedAt: Date;
+}
+
+@Exclude()
+class TechOutputDto {
+	@Expose()
+	knowledge_level: string;
+
+	@Expose()
+	tech: string;
+}
+
+@Exclude()
+export class ProfessionalExperienceOutputDto {
+	@Expose()
+	company: string;
+
+	@Expose()
+	role: string;
+
+	@Expose()
+	acting_time: string;
+
+	@Expose()
+	description: string;
+
+	@Expose()
+	qualification: string;
+}

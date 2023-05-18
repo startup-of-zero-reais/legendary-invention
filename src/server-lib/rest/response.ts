@@ -27,7 +27,7 @@ export class Resp<T = any> {
 
 		Object.assign(this.headers, { 'Content-Type': 'application/json' })
 
-		return this
+		return this.end()
 	}
 
 	writeHeader(key: string, value: string) {

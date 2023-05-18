@@ -18,6 +18,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -27,6 +30,8 @@
         "./src/server/*"
       ]
     },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "plugins": [
       {
         "name": "next"

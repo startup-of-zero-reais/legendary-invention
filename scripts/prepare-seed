@@ -1,0 +1,70 @@
+#!/bin/bash
+
+HAS_NVM=$NVM_DIR
+WANT_INSTALL="n"
+
+function install {
+	echo "Installing nvm..."
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+	if [ -f "~/.bashrc" ]; then
+		source "~/.bashrc"
+	fi
+
+	if [ -f "~/.zshrc" ]; then
+		source "~/.zshrc"
+	fi
+}
+
+if [[ "${HAS_NVM}" == "" ]]; then
+	printf "Want to install nvm (y/N) - "
+	read -n 1 WANT_INSTALL
+	echo ""
+
+	if [[ "${WANT_INSTALL}" == "y" || "${WANT_INSTALL}" == "Y" ]]; then
+		install
+	fi
+fi
+
+function callseed {
+	sleep 10
+	ts-node -r tsconfig-paths/register ./scripts/seed-candidates.ts --length=3 --reseed || exit 1;
+	ts-node -r tsconfig-paths/register ./scripts/seed-recruiters.ts --length=3 --reseed || exit 1;
+	ts-node -r tsconfig-paths/register ./scripts/seed-jobs.ts --length=100 --reseed || exit 1;
+}
+
+TRYAGAINS=y
+
+function canseed {
+	HAS_NVM=$NVM_DIR
+	local HAS_TS_NODE
+
+	if [[ "${HAS_NVM}" != "" ]]; then
+		. ~/.nvm/nvm.sh
+		nvm install
+		nvm use
+
+		TS_NODE=$(npm -g list ts-node)
+		[[ "${TS_NODE}" =~ ts-node@[0-9\.]*$ ]] && callseed || HAS_TS_NODE="false"
+	fi
+
+	if [[ "${TRYAGAINS}" == "y" && "${HAS_TS_NODE}" == "false" ]]; then
+		sudo npm i -g ts-node@10.9.1
+		TRYAGAINS=n
+		canseed
+	fi
+
+	if [[ "${TRYAGAINS}" == "n" && "${HAS_TS_NODE}" == "false" ]]; then
+		echo ""
+		echo "Can not run seed without ts node"
+		printf "Run the following command and try again:\n\tsudo npm i -g ts-node@10.9.1\n"
+	fi
+}
+
+printf "Want to seed database (y/N) - "
+read -n 1 WANT_TO_SEED
+echo ""
+
+if [[ "${WANT_TO_SEED}" == "y" || "${WANT_TO_SEED}" == "Y" ]]; then
+	canseed
+fi
